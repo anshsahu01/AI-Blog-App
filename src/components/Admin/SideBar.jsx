@@ -13,7 +13,7 @@ const SideBar = () => {
           }`
         }
       >
-        <img src="home_icon.svg" alt="homeicon" className="min-w-4 w-5" />
+        <img src="/home_icon.svg" alt="homeicon" className="min-w-4 w-5" />
         <p className="hidden md:inline-block">Dashboard</p>
       </NavLink>
 
@@ -25,7 +25,7 @@ const SideBar = () => {
           }`
         }
       >
-        <img src="add_icon.svg" alt="homeicon" className="min-w-4 w-5" />
+        <img src="/add_icon.svg" alt="homeicon" className="min-w-4 w-5" />
         <p className="hidden md:inline-block">Add blogs</p>
       </NavLink>
 
@@ -37,7 +37,7 @@ const SideBar = () => {
           }`
         }
       >
-        <img src="list_icon.svg" alt="listicon" className="min-w-4 w-5" />
+        <img src="/list_icon.svg" alt="listicon" className="min-w-4 w-5" />
         <p className="hidden md:inline-block">List blogs</p>
       </NavLink>
 
@@ -49,7 +49,7 @@ const SideBar = () => {
           }`
         }
       >
-        <img src="comment_icon.svg" alt="listicon" className="min-w-4 w-5" />
+        <img src="/comment_icon.svg" alt="listicon" className="min-w-4 w-5" />
         <p className="hidden md:inline-block">Comments</p>
       </NavLink>
     </div>

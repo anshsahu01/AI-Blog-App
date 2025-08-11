@@ -10,6 +10,10 @@ import ListBlog from './pages/Admin/ListBlog'
 import Blog from './pages/Blog'
 import Home from './pages/Home'
 
+
+// other imports
+import 'quill/dist/quill.snow.css'
+
 const App = () => {
   return (
     <div>
