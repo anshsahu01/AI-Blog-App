@@ -43,7 +43,7 @@ const Dashboard = () => {
           <p className="">Latest Blogs</p>
         </div>
 
-        <div className="relative max-w-4xl overflow-x-auto shadow rounded-lg scrollbar-hide bg-white">
+        <div className="relative max-w-4xl overflow-x-auto shadow rounded-lg scrollbar-hide bg-white mt-4">
           <table className=" w-full text-sm text-gray-500">
             <thead className="text-xs text-gray-600 text-left uppercase">
               <tr>

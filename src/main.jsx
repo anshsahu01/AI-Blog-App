@@ -80,6 +80,50 @@ export const footer_data = [
   }
 ]
 
+// commentsData.js
+
+export const comments = [
+  {
+    _id: "cmt1",
+    blog: { title: "Understanding React Hooks" },
+    name: "John Doe",
+    content: "This article helped me understand hooks better!",
+    createdAt: "2025-08-05T14:32:00Z",
+    isApproved: true
+  },
+  {
+    _id: "cmt2",
+    blog: { title: "JavaScript ES2025 Features" },
+    name: "Jane Smith",
+    content: "I can't wait to try these new features in my projects.",
+    createdAt: "2025-08-07T09:15:00Z",
+    isApproved: false
+  },
+  {
+    _id: "cmt3",
+    blog: { title: "Mastering CSS Grid Layout" },
+    name: "Mike Johnson",
+    content: "The grid examples were really helpful!",
+    createdAt: "2025-08-06T11:45:00Z",
+    isApproved: true
+  },
+  {
+    _id: "cmt4",
+    blog: { title: "Node.js Performance Optimization" },
+    name: "Sarah Lee",
+    content: "I applied these tips and my app is running faster.",
+    createdAt: "2025-08-08T18:20:00Z",
+    isApproved: false
+  },
+  {
+    _id: "cmt5",
+    blog: { title: "Understanding Async/Await in JS" },
+    name: "Alex Brown",
+    content: "Finally async/await makes sense to me now!",
+    createdAt: "2025-08-09T12:50:00Z",
+    isApproved: true
+  }
+];
 
 
 createRoot(document.getElementById('root')).render(
