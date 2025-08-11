@@ -80,6 +80,8 @@ export const footer_data = [
   }
 ]
 
+
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
 <BrowserRouter>
