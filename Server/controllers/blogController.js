@@ -174,6 +174,12 @@ export const deleteBlogById = async (req,res) => {
         const { id } = req.body;
 
         await Blog.findByIdAndDelete(id);
+
+        // after deleting the blog also delete the comments associated with it
+        await Comment.deleteMany({
+            blog : id
+        })
+
         res.json({
             success : true,
             message : "Blog deleted successfully"
