@@ -3,6 +3,8 @@
 import imageKit from "../Configs/imagekit.js";
 import fs from 'fs'
 import Blog from "../models/blog.model.js";
+import Comment from "../models/comment.model.js";
+
 
 export const addBlog = async (req, res) => {
     try {
@@ -204,4 +206,60 @@ export const togglePublish = async (req,res) => {
         })
         
      }
+}
+
+
+
+// controller for comment
+
+export const addComment = async (req,res) => {
+    try {
+
+        const {blog, name, content} = req.body;
+          await Comment.create({
+            blog,
+            name,
+            content
+          })
+
+          res.json({
+            success : true,
+            message : "Comment Added for review"
+          })
+        
+    } catch (error) {
+
+        res.json({
+            success : false,
+            message : error.message
+        })
+
+    }
+}
+
+
+// function to get blog comments
+
+export const getBlogComments = async (req,res) => {
+    try {
+        const {blogId} = req.body;
+        const comments = await Comment.find({
+            blog : blogId,
+            isApproved : true
+        }).sort({
+            createdAt : -1
+        })
+
+        res.json({
+            success : true,
+            comments
+        })
+    } catch (error) {
+
+        res.json({
+            success : false,
+            message : error.message
+        })
+        
+    }
 }
