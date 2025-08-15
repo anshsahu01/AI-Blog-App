@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import Blog from '../models/blog.model.js';
+import Comment from '../models/comment.model.js';
 
 
 export const adminLogin = async (req,res)=>{
@@ -134,7 +135,7 @@ export const approveCommentById = async (req,res) => {
 
         res.json({
             success : true,
-            message : "Comment Deleted Successfully"
+            message : "Comment Approved Successfully"
         })
         
     } catch (error) {

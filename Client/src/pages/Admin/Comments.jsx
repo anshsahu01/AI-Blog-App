@@ -1,11 +1,47 @@
 import React, { useEffect,useState } from 'react'
 import CommenTable from '../../components/Admin/CommenTable';
-import { comments } from '../../main';
+import { useAppContext } from '../../context/appContext';
+import toast from 'react-hot-toast';
+// import { comments } from '../../main';
 const Comments = () => {
-  const [comment,setComment] = useState([]);
+  const [comments,setComments] = useState([]);
   const [filter , setFilter] = useState('Not Approved');
+
+
+  const {axios, token} = useAppContext();
+
+
+
+
+
   const fetchComments = async ()=>{
-    setComment(comments);
+     try {
+      const {data} = await axios.get('/api/admin/comments',{
+        headers : {
+          Authorization : token
+        }
+        })
+
+        if(data){
+          console.log("-----DATA----",data);
+
+        }else{
+          console.log("DATA NHI AAYA");
+        }
+
+        if(data.status){
+          setComments(data.comments);
+          toast.success(data.message);
+
+        }else{
+          console.log("nhi chala");
+          toast.error(data.message);
+        }
+      
+     } catch (error) {
+      toast.error(error.message);
+      
+     }
   }
 
   useEffect(()=>{
@@ -41,8 +77,8 @@ fetchComments();
     </tr>
   </thead>
   <tbody>
-    {comment .filter((item)=>{
-      if(filter === "Approved") return comment.isApproved === true;
+    {comments?.filter((item)=>{
+      if(filter === "Approved") return item.isApproved === true;
       return item.isApproved === false;
     }).map((item,idx)=><CommenTable key={item._id} comment={item} index={idx+1} fetchComments={fetchComments}/>)}
 

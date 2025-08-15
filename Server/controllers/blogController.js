@@ -203,6 +203,10 @@ export const togglePublish = async (req,res) => {
         const blog = await Blog.findById(id);
         blog.isPublished = !blog.isPublished;
         await blog.save();
+        res.json({
+            success : true,
+            message : "Status Changed"
+        })
         
      } catch (error) {
 

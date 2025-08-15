@@ -31,7 +31,7 @@ export const AppProvider = ({ children }) => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
       fetchBlogs();
     }
-  }, []);
+  }, [blogs]);
 
   const value = {
     axios,

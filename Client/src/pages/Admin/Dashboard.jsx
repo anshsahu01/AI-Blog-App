@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { blogs } from "../../main";
+// import { blogs } from "../../main";
 import BlogTable from "../../components/Admin/BlogTable";
+import { useAppContext } from "../../context/appContext";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
-  const [blog,setBlogData] =  useState([]);
+  const { blogs } = useAppContext();
+  console.log("----Blogs---", blogs);
+  const [blog, setBlogData] = useState([]);
+  const [blogsList, setBlogsList] = useState([]);
   const [dashboarddata, setDashboardData] = useState({
     blogs: 0,
     comments: 0,
@@ -11,19 +16,42 @@ const Dashboard = () => {
     recentBlogs: [],
   });
 
+  const { axios, token } = useAppContext();
+  console.log(dashboarddata);
 
   const fetchDashboard = async () => {
-    setDashboardData();
+    try {
+      const res = await axios.get("/api/admin/dashboard", {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      const data = res.data;
+
+      if (data.success) {
+        setDashboardData(data.dashboardData);
+
+        // toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
-  const fetchBlogs = async ()=>{
-    setBlogData(blogs)
-  }
+  const fetchBlogs = async () => {
+    setBlogData(blogs);
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchBlogs();
-  },[])
-
+    fetchDashboard();
+    () => {
+      setBlogsList(blogs);
+    };
+  }, []);
 
   return (
     <div className="flex-1 p-4 md:p-10 bg-blue-50/50">
@@ -31,8 +59,30 @@ const Dashboard = () => {
         <div className="flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all">
           <img src="dashboard_icon_1.svg" alt="icon" />
           <div>
-            {/* <p>{}</p>{// for recentBlogs} */}
+            <p className="text-xl font-semibold text-gray-600">
+              {dashboarddata.blogs}
+            </p>
             <p className="text-gray-400 font-light">Blogs</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all">
+          <img src="dashboard_icon_2.svg" alt="icon" />
+          <div>
+            <p className="text-xl font-semibold text-gray-600">
+              {dashboarddata.comments}
+            </p>
+            <p className="text-gray-400 font-light">Comments</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all">
+          <img src="dashboard_icon_3.svg" alt="icon" />
+          <div>
+            <p className="text-xl font-semibold text-gray-600">
+              {dashboarddata.drafts}
+            </p>
+            <p className="text-gray-400 font-light">Drafts</p>
           </div>
         </div>
       </div>
@@ -67,10 +117,14 @@ const Dashboard = () => {
             </thead>
 
             <tbody>
-              {blog.map((item,index)=>(
-                         <BlogTable key={item._id} blog={item} fetchBlogs={fetchBlogs} index={Number(item._id)+1}  />
+              {blogs.map((item, index) => (
+                <BlogTable
+                  key={item._id}
+                  blog={item}
+                  fetchBlogs={fetchBlogs}
+                  index={index + 1}
+                />
               ))}
-
             </tbody>
           </table>
         </div>
