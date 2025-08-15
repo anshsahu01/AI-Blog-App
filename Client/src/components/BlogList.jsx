@@ -2,10 +2,24 @@ import React,{useState} from 'react'
 import {motion} from 'motion/react'
 import { blogs } from '../main'
 import BlogCard from './BlogCard'
+import { useAppContext } from '../context/appContext'
 
 
 const BlogList = () => {
-    const [menu, setMenu] = useState("All")
+    const [menu, setMenu] = useState("All");
+    const {blogs,input} = useAppContext();
+     const filteredBlogs = () => {
+  const searchTerm = input.trim().toLowerCase();
+
+  if (!searchTerm) return blogs;
+
+  return blogs.filter(blog => {
+    const title = blog.title?.toLowerCase() || "";
+    const category = blog.category?.toLowerCase() || "";
+    return title.includes(searchTerm) || category.includes(searchTerm);
+  });
+};
+
     const blogCategories = ['All', 'Technology', 'Startup', 'Lifestyle', 'Finance'];
   return (
     <div>
@@ -25,7 +39,7 @@ const BlogList = () => {
         </div>
 
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 mb-24 mx-8 sm:mx-40'>
-            {blogs.filter((blog)=>menu === "All"?true : blog.category===menu)
+            {filteredBlogs().filter((blog)=>menu === "All"?true : blog.category===menu)
             .map((blog)=> <BlogCard key={blog._id} blog={blog}/>)}
 
         </div>
