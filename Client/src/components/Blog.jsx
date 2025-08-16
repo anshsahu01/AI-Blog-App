@@ -195,7 +195,7 @@ function Blog() {
 
       {/* Blog Content */}
       <div className="max-w-3xl mx-auto text-gray-700 leading-relaxed">
-        <div dangerouslySetInnerHTML={{ __html: data.content }} />
+        <div dangerouslySetInnerHTML={{ __html: data.description }} />
       </div>
 
       {/* Comments */}

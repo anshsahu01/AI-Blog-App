@@ -16,7 +16,7 @@ const BlogCard = ({blog}) => {
             <div className='p-5'>
                 <h5 className='mb-2 font-medium text-gray-900'>
                     {title}
-                    <p className='mb-3 text-xs text-gray-600'>{description} </p>
+                    {/* <p className='mb-3 text-xs text-gray-600'>{description} </p> */}
                     </h5>
             </div> 
       
