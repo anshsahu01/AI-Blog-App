@@ -60,6 +60,4 @@ node server.js
 
 Ansh Sahu
 📌 Third year B.Tech | MERN & AI Enthusiast
-"react-hot-toast": "^2.5.2",
-"react-router-dom": "^7.8.0",
-"tailwindcss": "^4.1.11"
+
