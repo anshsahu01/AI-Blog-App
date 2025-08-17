@@ -1,5 +1,5 @@
 import express from 'express'
-import { addBlog, getAllBlogs, getBlogById, deleteBlogById, togglePublish, addComment, getBlogComments, generateContentAI } from '../controllers/blogController.js';
+import { addBlog, getAllBlogs, getBlogById, deleteBlogById, togglePublish, addComment, getBlogComments, generateContentAI, generateImage  } from '../controllers/blogController.js';
 import upload from '../middleware/multer.js';
 import auth from '../middleware/auth.js';
 
@@ -22,6 +22,9 @@ blogRouter.post("/comments",getBlogComments);
 //route for gemini ai
 blogRouter.post("/generate",auth,generateContentAI);
 
+
+//route for pollination ai
+blogRouter.post('/generate-image',generateImage);
 
 
 

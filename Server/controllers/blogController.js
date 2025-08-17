@@ -5,7 +5,7 @@ import fs from 'fs'
 import Blog from "../models/blog.model.js";
 import Comment from "../models/comment.model.js";
 import main from "../Configs/gemini.js";
-
+import { generatePollinationUrl } from "../Configs/pollination.js";
 
 // export const addBlog = async (req, res) => {
 //     try {
@@ -379,6 +379,54 @@ export const generateContentAI = async (req,res) => {
         
     } catch (error) {
         res.json({
+            success : false,
+            message : error.message
+        })
+        
+    }
+}
+
+
+// Controller for Pollination ai related operations
+
+export const generateImage = async (req,res) => {
+    try {
+
+        const {title} = req.body;
+        if(title){
+            console.log(title);
+        }
+
+        if(!title){
+            return res.json({
+                success : false,
+                message : "Title is required to generate image"
+            })
+        }
+    
+
+            const width = 512;
+    const height = 512;
+    const seed = 42;
+    const model = "flux";
+    const prompt = `Generate image for this title of my blog post - "${title}"`; //title will be taken as the prompt
+
+        const images = [1,2,3,4].map((i)=>(
+            generatePollinationUrl(prompt,width,height, seed,model)
+        ))
+
+        
+        return res.json({
+            success : true,
+            images
+        })
+
+
+        
+    } catch (error) {
+
+        console.log("-----ERROR IN GENERATIG IMAGE-----",error.message);
+        return res.json({
             success : false,
             message : error.message
         })
