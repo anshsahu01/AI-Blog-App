@@ -17,7 +17,7 @@ const Dashboard = () => {
   });
 
   const { axios, token } = useAppContext();
-  console.log(dashboarddata);
+  // console.log(dashboarddata);
 
   const fetchDashboard = async () => {
     try {
