@@ -3,6 +3,7 @@ import Quill from "quill";
 import { useAppContext } from "../../context/appContext";
 import toast from "react-hot-toast";
 import { marked } from "marked";
+
 const AddBlog = () => {
   const { axios, token } = useAppContext();
   const [isAdding, setIsAdding] = useState(false);
@@ -12,6 +13,10 @@ const AddBlog = () => {
   const [category, setCategory] = useState("");
   const [isPublished, setIsPublished] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [aiImages, setaiImages] = useState([]);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imgGenerated, setimgGenerated] = useState(false);
+  const [selectedaiImage, setselectedaiImage] = useState(null);
 
   const onSubmitHandler = async (e) => {
     try {
@@ -105,6 +110,44 @@ const AddBlog = () => {
     }
   };
 
+
+  const generateImageWithAI = async () => {
+
+
+    if(!title){
+      return toast.error("Please Enter title to generate images");
+    }
+
+    try {
+      setImageLoading(true);
+
+      const {data} = await axios.post("/api/blog/generate-image", {
+        title : title
+      });
+
+      if(data.success){
+        
+        console.log("-----IMAGE GENERATE HOGYI-----",data);
+      
+        setaiImages(data.images);
+        setimgGenerated(true);
+        
+
+      }else{
+        console.log("------DATA NHI MILA-----");
+        return toast.error("error in generating res");
+      }
+      
+    } catch (error) {
+
+      console.log("ERROR IN GENERATE IMAGE",error);
+      toast.error(data.message);
+      
+    }finally{
+      setImageLoading(false);
+    }
+  }
+
   const editorRef = useRef(null);
   const quillRef = useRef(null);
 
@@ -121,11 +164,14 @@ const AddBlog = () => {
       className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll"
     >
       <div className="bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded">
-        <p>Upload Thumbnail</p>
 
+        <div className="flex flex-row justify-between items-center">
+<div className="flex flex-col">
+        <p>Upload Thumbnail</p>
+           
         <label className="cursor-pointer">
           <img
-            src={!image ? "/upload_area.svg" : URL.createObjectURL(image)}
+            src={!image ? "/upload_area.svg" : typeof image === "string" ? image : URL.createObjectURL(image)}
             alt="upload icon"
             className="mt-2 h-16 rounded"
           />
@@ -133,9 +179,20 @@ const AddBlog = () => {
             onChange={(e) => setImage(e.target.files[0])}
             type="file"
             hidden
-            required
+            // required
           />
         </label>
+        </div>
+
+        {/* // generate with AI button */}
+
+        <button 
+        disabled = {imageLoading} 
+        onClick={generateImageWithAI}
+        type="button"
+         className=" text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer"
+          >Generate Image with AI</button>
+        </div>
 
         <p className="mt-4">Blog title</p>
         <input
@@ -210,6 +267,71 @@ const AddBlog = () => {
           {isAdding ? "Adding..." : "Add Blog"}
         </button>
       </div>
+
+      {imgGenerated && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+    <div className="bg-white rounded-xl p-6 w-[700px] shadow-xl relative">
+
+      {/* Close button */}
+      <button 
+        onClick={() => setimgGenerated(false)} 
+        className="absolute top-3 right-3 text-gray-500 hover:text-black"
+      >
+        ✕
+      </button>
+
+      <h2 className="text-lg font-semibold mb-4 text-center">
+        Select an AI Generated Image
+      </h2>
+
+      <div className="grid grid-cols-2 gap-6"> 
+        {aiImages.slice(0, 4).map((imgUrl, index) => (  // 👈 only show 4 images
+          <label 
+            key={index} 
+            className="relative cursor-pointer border rounded-lg border-gray-400 overflow-hidden group"
+          >
+            <input 
+              type="radio" 
+              name="selectedImage" 
+              value={imgUrl}
+              className="absolute top-2 left-2 w-5 h-5 z-10"
+              onChange={() => {
+                setselectedaiImage(imgUrl);
+              }}
+            />
+            <img 
+              src={imgUrl} 
+              alt={`AI generated ${index}`} 
+              className="w-full h-full object-cover transition-transform group-hover:scale-105" 
+            />
+          </label>
+        ))}
+      </div>
+
+      <div className="mt-6 flex justify-end">
+        <button 
+          onClick={() => {
+            if(!selectedaiImage){
+              toast.error("Please Select an image");
+              return;
+            }
+            
+            setImage(selectedaiImage);
+            setimgGenerated(false);
+
+          }
+
+          } 
+          className="bg-blue-700 text-white px-4 py-2 rounded-lg"
+        >
+          Confirm Selection
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
     </form>
   );
 };

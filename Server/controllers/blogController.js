@@ -127,7 +127,7 @@ export const addBlog = async (req, res) => {
   try {
     console.log("=== DEBUGGING BLOG CREATION ===");
     console.log("req.body:", req.body);
-    console.log("req.file:", req.file);
+    // console.log("req.file:", req.file);
 
     if (!req.body.blog) {
       return res.json({
@@ -137,46 +137,54 @@ export const addBlog = async (req, res) => {
     }
 
     const { title, subTitle, description, category, isPublished } = JSON.parse(req.body.blog);
+      
 
-    const imageFile = req.file;
-    if (!imageFile) {
-      return res.json({
-        success: false,
-        message: "Image file is required",
-      });
-    }
-
-    if (!title || !description || !category) {
+       if (!title || !description || !category) {
       return res.json({
         success: false,
         message: "Missing required fields: title, description, or category",
       });
     }
 
-    // ✅ Upload directly from buffer
-    const uploadResponse = await imageKit.upload({
-      file: imageFile.buffer,
-      fileName: Date.now() + "-" + imageFile.originalname,
-    });
 
-    console.log("ImageKit upload response:", uploadResponse);
-
-    // ✅ Optimize image URL
-    const optimizedImageUrl = imageKit.url({
-      path: uploadResponse.filePath,
-      transformation: [
-        { quality: "auto" },
-        { format: "webp" },
-        { width: "1280" },
-      ],
+    let finalImageUrl = null;
+    if(req.file){
+       const uploadResponse =  await imageKit.upload({
+      file: req.file.buffer,
+      fileName: Date.now() + "-" + req.file.originalname,
     });
+       
+    finalImageUrl = imageKit.url({
+        path: uploadResponse.filePath,
+        transformation: [
+          { quality: "auto" },
+          { format: "webp" },
+          { width: "1280" },
+        ],
+      });
+    
+
+    }else if(req.body.thumbnail){
+      console.log("Thumbnail",req.body.thumbnail);
+      finalImageUrl = req.body.thumbnail;
+    }else{
+      return res.json({
+        success : false,
+        message : "Either upload an image or an AI generated image"
+      })
+    }
+
+    
+ 
+
+    
 
     const blogData = {
       title,
       subTitle,
       description,
       category,
-      thumbnail: optimizedImageUrl,
+      thumbnail: finalImageUrl,
       isPublished: isPublished || false,
     };
 
