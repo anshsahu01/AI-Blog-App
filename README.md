@@ -8,6 +8,7 @@ With the power of **Google Gemini AI**, users can generate blog descriptions ins
 ## ✨ Features
 - 🔑 **JWT Authentication** (secure login/signup)
 - 📝 **AI-Powered Blog Writing** (Gemini AI integration)
+- 📌 AI-powered thumbnail generation (via Pollinations AI) or manual image upload support
 - 🎨 **Responsive UI** (TailwindCSS + Motion for smooth animations)
 - 🗄️ **MongoDB Database** (via Mongoose)
 - 📷 **Image Uploads** (Multer + ImageKit)
@@ -40,6 +41,7 @@ With the power of **Google Gemini AI**, users can generate blog descriptions ins
 - Dotenv (environment management)
 - CORS (secure API requests)
 - Google Gemini AI (`@google/generative-ai`)
+- Pollinations AI — for automatic blog thumbnail generation
 
 **How to run the project**
 
