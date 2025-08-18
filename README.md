@@ -1,4 +1,5 @@
-# 📝 AI Blog App
+# 📝 AI Blog App  link - https://ai-blog-app-a47e.vercel.app/
+
 
 A **full-stack MERN blog application** that is **fully responsive** and comes with **JWT-based authentication**.  
 With the power of **Google Gemini AI**, users can generate blog descriptions instantly, making writing blogs faster and easier.  
