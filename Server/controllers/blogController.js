@@ -415,12 +415,18 @@ export const generateImage = async (req,res) => {
 
             const width = 512;
     const height = 512;
-    const seed = 42;
+    // const seed = Math.floor(Math.random() * 1000000);;
     const model = "flux";
     const prompt = `Generate image for this title of my blog post - "${title}"`; //title will be taken as the prompt
 
         const images = [1,2,3,4].map((i)=>(
-            generatePollinationUrl(prompt,width,height, seed,model)
+            generatePollinationUrl(
+        prompt,
+        width,
+        height,
+        Math.floor(Math.random() * 1000000), // random seed each time
+        model
+      )
         ))
 
         
