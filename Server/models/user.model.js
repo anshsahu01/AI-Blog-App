@@ -46,7 +46,7 @@ userSchema.methods.comparePassword = async function (givenPassword) {
 
 // access token
 userSchema.methods.generateAccessToken = function () {
-    return jwt.sign(    // ❌ you wrote isJWT
+    return jwt.sign(    
         {
             _id: this._id,
             email: this.email,

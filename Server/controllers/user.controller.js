@@ -1,6 +1,33 @@
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
+
+
+
+//methods to generate access and refresh tokens
+
+const generateAccessandRefreshTokens = async (userId) => {
+    try {
+        const user = await User.findOne(userId);
+
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
+
+        user.refreshToken = refreshToken;
+        user.save({validateBeforeSave : false});
+
+        return {accessToken, refreshToken};
+
+        
+    } catch (error) {
+        return res.json({
+            success : false,
+            message : "Something went wrong while generating refresh and access token"
+        })
+        
+    }
+}
+
 export const registerUser = async (req, res) => {
   try {
     console.log(req.body);
@@ -75,10 +102,68 @@ export const registerUser = async (req, res) => {
 
 
 export const loginUser = async (req, res) => {
-    try {
-        
-        
-    } catch (error) {
-        
+  try {
+    const { email, password, username } = req.body;
+
+    if (!username && !email) {
+      return res.status(400).json({
+        success: false,
+        message: "Username or email is required",
+      });
     }
-}
+
+    
+    const user = await User.findOne({
+      $or: [{ username }, { email }],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User does not exist",
+      });
+    }
+
+  
+    const isPasswordValid = await user.comparePassword(password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid user credentials",
+      });
+    }
+
+    const { accessToken, refreshToken } = await generateAccessandRefreshTokens(
+      user._id
+    );
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    const options = {
+      httpOnly: true,
+      secure: true, // only on HTTPS (set false for localhost if needed)
+      sameSite: "strict",
+    };
+
+    return res
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json({
+        success: true,
+        user: loggedInUser,
+        accessToken,
+        refreshToken,
+        message: "User logged in successfully",
+      });
+  } catch (error) {
+    console.error("Error in loginUser:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while logging in",
+    });
+  }
+};
+
