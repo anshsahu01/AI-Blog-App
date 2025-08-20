@@ -4,6 +4,8 @@ import cors from 'cors'
 import connectDB from './Configs/Db.js';
 import adminRouter from './routes/admin.routes.js';
 import blogRouter from './routes/blog.routes.js';
+import userRouter from './routes/user.routes.js';
+
 
 const app = express();
 //Middlewares
@@ -19,7 +21,7 @@ app.use(express.json())
 app.get('/',(req,res)=> res.send("API is working"));
 app.use('/api/admin',adminRouter);
 app.use('/api/blog',blogRouter);
-
+app.use('/api/user',userRouter);
 
 
 
