@@ -9,6 +9,8 @@ import ListBlog from './pages/Admin/ListBlog'
 // Page Import 
 import Blog from './pages/Blog'
 import Home from './pages/Home'
+import SignUpPage from './pages/SignUp.jsx'
+
 
 
 // other imports
@@ -28,6 +30,7 @@ const App = () => {
         <Route path="/blog/:id" element = {<Blog/>}/>
        
        // making the parent route admin and child routes in import PropTypes from 'prop-types'
+       <Route path="/signup" element={<SignUpPage/>}/>
        <Route path='/admin' element={token?<Layout/>:<Login/>}>
          <Route index element={<Dashboard/>}/> // index means ye default route hai admin per jaane per ye hi dikhega
          <Route path='addBlog' element={<AddBlog/>}/>
