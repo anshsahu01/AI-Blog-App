@@ -28,8 +28,10 @@ const SignUp = () => {
         toast.error("No response from server");
         return;
       }
+      console.log("---DATA---",data.token);
 
       if (data.success) {
+        console.log(data);
         setToken(data.token);
         localStorage.setItem('token', data.token);
         axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;

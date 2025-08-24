@@ -28,39 +28,107 @@ const generateAccessandRefreshTokens = async (userId) => {
     }
 }
 
+// export const registerUser = async (req, res) => {
+//   try {
+//     console.log(req.body);
+//     // take details from frontend through req
+//     // then check whether user is aleready registered or not
+//     // if not then create a new object and save on db
+//     // then return the response
+
+//     const { name, email, password } = req.body;
+
+//     if (
+//       [name, email, password].some((field) => !field || field.trim() === "")
+//     ) {
+//       return res.json({
+//         status: 400,
+//         success: false,
+//         message: "All fields are necessary",
+//       });
+//     }
+
+//     //Checked if all details are present or not
+
+//     // now check if the user aleready exist or not
+
+//     const existedUser = await User.findOne({
+//       $or: [{ name }, { email }],
+//     });
+
+//     if (existedUser) {
+//       return res.json({
+//         status: 409,
+//         success: false,
+//         message: "User with email or name aleready exists",
+//       });
+//     }
+
+//     const user = await User.create({
+//       name,
+//       email,
+//       password,
+//     });
+
+//     // check whether user is created or not
+
+//     const createdUser = await User.findById(user._id).select(
+//       "-password -refreshToken"
+//     );
+
+//     // now generate access and refresh token
+//    const accessToken = user.generateAccessToken();
+//    if(!accessToken){
+//     console.log("Problem in generating access token");
+//    }
+    
+
+//     console.log("----CREATED USER----",createdUser);
+    
+
+//     if (!createdUser) {
+//       return res.json({
+//         status: 201,
+//         success: false,
+//         message: "Something went wrong while registering user",
+        
+//       });
+//     }
+
+//     return res.json({
+//       success: true,
+//       message: "User registered Successfully",
+//        user :createdUser,
+//        accessToken
+  
+//     });
+//   } catch (error) {
+//     res.json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
+
 export const registerUser = async (req, res) => {
   try {
-    console.log(req.body);
-    // take details from frontend through req
-    // then check whether user is aleready registered or not
-    // if not then create a new object and save on db
-    // then return the response
-
     const { name, email, password } = req.body;
 
-    if (
-      [name, email, password].some((field) => !field || field.trim() === "")
-    ) {
-      return res.json({
-        status: 400,
+    if ([name, email, password].some((field) => !field || field.trim() === "")) {
+      return res.status(400).json({
         success: false,
         message: "All fields are necessary",
       });
     }
-
-    //Checked if all details are present or not
-
-    // now check if the user aleready exist or not
 
     const existedUser = await User.findOne({
       $or: [{ name }, { email }],
     });
 
     if (existedUser) {
-      return res.json({
-        status: 409,
+      return res.status(409).json({
         success: false,
-        message: "User with email or name aleready exists",
+        message: "User with email or name already exists",
       });
     }
 
@@ -70,29 +138,27 @@ export const registerUser = async (req, res) => {
       password,
     });
 
-    // check whether user is created or not
-
-    const createdUser = await User.findById(user._id).select(
-      "-password -refreshToken"
-    );
-
-    console.log("----CREATED USER----",createdUser);
+    // remove password from response
+    const createdUser = await User.findById(user._id).select("-password");
 
     if (!createdUser) {
-      return res.json({
-        status: 201,
+      return res.status(500).json({
         success: false,
         message: "Something went wrong while registering user",
       });
     }
 
-    return res.json({
+    
+
+    return res.status(201).json({
       success: true,
-      message: "User registered Successfully",
-      createdUser,
+      message: "User registered successfully",
+      user: createdUser,
+
     });
+
   } catch (error) {
-    res.json({
+    res.status(500).json({
       success: false,
       message: error.message,
     });
@@ -100,21 +166,20 @@ export const registerUser = async (req, res) => {
 };
 
 
-
 export const loginUser = async (req, res) => {
   try {
-    const { email, password, username } = req.body;
+    const { email, password, name } = req.body;
 
-    if (!username && !email) {
+    if (!name && !email) {
       return res.status(400).json({
         success: false,
-        message: "Username or email is required",
+        message: "name or email is required",
       });
     }
 
     
     const user = await User.findOne({
-      $or: [{ username }, { email }],
+      $or: [{ name }, { email }],
     });
 
     if (!user) {
@@ -144,8 +209,8 @@ export const loginUser = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true, // only on HTTPS (set false for localhost if needed)
-      sameSite: "strict",
+      secure: false, // only on HTTPS (set false for localhost if needed)
+      // sameSite: "strict",
     };
 
     return res
@@ -199,6 +264,7 @@ export const logoutUser = async (req, res) => {
     })
     
   } catch (error) {
+    console.log("---ERROR IN LOGOUT-----");
 
     return res.json({
       success : false,

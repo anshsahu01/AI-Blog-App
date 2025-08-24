@@ -1,11 +1,47 @@
-import React, {useState} from 'react'
+import React from 'react'
 import { useNavigate,Outlet}from 'react-router-dom'
 import SideBar from '../../components/Admin/SideBar';
+import { useAppContext } from '../../context/appContext.jsx';
+import toast from 'react-hot-toast';
 const Layout = () => {
     const navigate = useNavigate();
+    const {axios, token, setToken} = useAppContext();
 
-    const logout = ()=>{
-        navigate('/');
+console.log("----TOKEN---",token);
+
+
+    const logout = async ()=>{
+      try {
+        const res = await axios.post("/api/user/logout",{},{
+          headers : {
+            Authorization : token,
+          }
+        });
+        if(res){
+          console.log(res);
+        }
+        const data = res.data;
+        if(data.success){
+          toast.success(data.message);
+             setToken(null);
+             localStorage.removeItem("token");
+          navigate("/login");
+        }else{
+          toast.error(data.message);
+          return;
+        }
+
+
+
+
+          
+        
+      } catch (error) {
+        toast.error(error.message);
+        
+      }
+
+     
     }
   return (
     <>

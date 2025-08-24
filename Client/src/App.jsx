@@ -31,6 +31,7 @@ const App = () => {
        
        // making the parent route admin and child routes in import PropTypes from 'prop-types'
        <Route path="/signup" element={<SignUpPage/>}/>
+       <Route path="/login" element={<Login/>}/>
        <Route path='/admin' element={token?<Layout/>:<Login/>}>
          <Route index element={<Dashboard/>}/> // index means ye default route hai admin per jaane per ye hi dikhega
          <Route path='addBlog' element={<AddBlog/>}/>
