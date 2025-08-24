@@ -209,8 +209,8 @@ export const loginUser = async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: false, // only on HTTPS (set false for localhost if needed)
-      // sameSite: "strict",
+      secure: true, // only on HTTPS (set false for localhost if needed)
+       sameSite: "strict",
     };
 
     return res
@@ -227,7 +227,7 @@ export const loginUser = async (req, res) => {
     console.error("Error in loginUser:", error);
     return res.status(500).json({
       success: false,
-      message: "Something went wrong while logging in",
+      message:error.message,
     });
   }
 };
