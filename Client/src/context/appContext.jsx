@@ -12,6 +12,7 @@ export const AppProvider = ({ children }) => {
   const [blogs, setBlogs] = useState([]);
   const [input, setInput] = useState("");
   const [userId, setuserId] = useState("");
+  // const [userBlogs, setUserBlogs] = useState([]);
   const navigate = useNavigate();
 
   const fetchBlogs = async () => {
@@ -22,6 +23,37 @@ export const AppProvider = ({ children }) => {
       toast.error(error.message);
     }
   };
+
+  // to fetch user blogs 
+  const fetchUserBlogs = async () => {
+    try {
+      const res = await axios.get("/api/blog/user-blogs",{
+        headers : {
+          Authorization : token,
+        }
+      });
+      if(!res){
+        console.log("Error in fetching user blogs");
+
+      }
+      const data = res.data;
+      if(data.success){
+       
+        return data.blogs;
+
+      }else{
+        toast.error(data.message);
+        return [];
+      }
+
+
+      
+    } catch (error) {
+      toast.error(error.message);
+      return;
+      
+    }
+  }
 
   useEffect(() => {
     
@@ -44,7 +76,8 @@ export const AppProvider = ({ children }) => {
     input,
     setInput,
     userId,
-    setuserId
+    setuserId,
+    fetchUserBlogs
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

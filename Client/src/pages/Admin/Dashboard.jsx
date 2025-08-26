@@ -5,10 +5,10 @@ import { useAppContext } from "../../context/appContext";
 import toast from "react-hot-toast";
 
 const Dashboard = () => {
-  const { blogs } = useAppContext();
-  console.log("----Blogs---", blogs);
-  const [blog, setBlogData] = useState([]);
-  const [blogsList, setBlogsList] = useState([]);
+  const { fetchUserBlogs } = useAppContext();
+
+  const [blogData, setBlogData] = useState([]);
+
   const [dashboarddata, setDashboardData] = useState({
     blogs: 0,
     comments: 0,
@@ -41,17 +41,24 @@ const Dashboard = () => {
     }
   };
 
-  const fetchBlogs = async () => {
-    setBlogData(blogs);
+  // const fetchBlogs = async () => {
+  //   setBlogData(blogs);
+  // };
+
+  const loaduserBlogs = async () => {
+    if (token) {
+      const blogs = await fetchUserBlogs();
+      if (blogs.length === 0) {
+        toast.success("User has no blogs");
+      }
+      setBlogData(blogs);
+    }
   };
 
   useEffect(() => {
-    fetchBlogs();
+    loaduserBlogs();
     fetchDashboard();
-    () => {
-      setBlogsList(blogs);
-    };
-  }, []);
+  }, [token]);
 
   return (
     <div className="flex-1 p-4 md:p-10 bg-blue-50/50">
@@ -117,11 +124,11 @@ const Dashboard = () => {
             </thead>
 
             <tbody>
-              {blogs.map((item, index) => (
+              {blogData.map((item, index) => (
                 <BlogTable
                   key={item._id}
                   blog={item}
-                  fetchBlogs={fetchBlogs}
+                  fetchBlogs={loaduserBlogs}
                   index={index + 1}
                 />
               ))}
