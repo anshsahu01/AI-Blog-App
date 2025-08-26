@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { marked } from "marked";
 
 const AddBlog = () => {
-  const { axios, token } = useAppContext();
+  const { axios, token, userId } = useAppContext();
   const [isAdding, setIsAdding] = useState(false);
   const [image, setImage] = useState(false);
   const [title, setTitle] = useState("");
@@ -23,12 +23,15 @@ const AddBlog = () => {
       e.preventDefault();
       setIsAdding(true);
 
+      console.log("---USERID--",userId);
+
       const blog = {
         title,
         subTitle,
         description: quillRef.current.root.innerHTML,
         category,
         isPublished,
+        user : userId
       };
 
       const formData = new FormData();
@@ -39,8 +42,6 @@ const AddBlog = () => {
         console.log(token);
       }
 
-      // const { data } = await axios.post("/api/blog/add-blog", formData);
-      //  const {data} =  await axios.post("/api/blog/add-blog", formData);
 
       const res = await axios.post("/api/blog/add-blog", formData, {
         headers: {
@@ -141,7 +142,7 @@ const AddBlog = () => {
     } catch (error) {
 
       console.log("ERROR IN GENERATE IMAGE",error);
-      toast.error(data.message);
+      toast.error(error.message);
       
     }finally{
       setImageLoading(false);

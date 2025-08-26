@@ -29,6 +29,12 @@ const blogSchema = new mongoose.Schema({
     isPublished : {
         type : Boolean,
         required : true,
+    },
+
+    user : {
+        type : mongoose.Schema.Types.ObjectId,// ye reference to user hai
+        ref : "User",
+        required : true
     }
 
 

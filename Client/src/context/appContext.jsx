@@ -11,6 +11,7 @@ export const AppProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [input, setInput] = useState("");
+  const [userId, setuserId] = useState("");
   const navigate = useNavigate();
 
   const fetchBlogs = async () => {
@@ -42,6 +43,8 @@ export const AppProvider = ({ children }) => {
     setBlogs,
     input,
     setInput,
+    userId,
+    setuserId
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

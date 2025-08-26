@@ -7,6 +7,7 @@ import Comment from "../models/comment.model.js";
 import main from "../Configs/gemini.js";
 import { generatePollinationUrl } from "../Configs/pollination.js";
 
+
 // export const addBlog = async (req, res) => {
 //     try {
 //         // Add extensive debugging
@@ -128,6 +129,8 @@ export const addBlog = async (req, res) => {
     console.log("=== DEBUGGING BLOG CREATION ===");
     console.log("req.body:", req.body);
     // console.log("req.file:", req.file);
+    console.log("---FILE---",req.file);
+    console.log("--BLOG---",req.body.blog);
 
     if (!req.body.blog) {
       return res.json({
@@ -186,6 +189,7 @@ export const addBlog = async (req, res) => {
       category,
       thumbnail: finalImageUrl,
       isPublished: isPublished || false,
+      user : req.user._id,
     };
 
     const newBlog = await Blog.create(blogData);
@@ -264,6 +268,46 @@ export const getBlogById = async (req, res) => {
         })
         
     }
+}
+
+//function to get individual user's blogs
+
+export const getUserBlogs = async (req,res) => {
+  try {
+    const userId = req.user._id;
+    if(!userId){
+      return res.json({
+        success : false,
+        message : "User Not found"
+      })
+    }
+
+    const blogs = await Blog.find({
+      user : userId
+    })
+    .sort({
+      createdAt : -1
+    })
+
+    if(!blogs){
+      return res.json({
+        success : false,
+        message : "Problem in finding Blogs",
+      })
+    }
+
+    return res.json({
+      success : true,
+      blogs
+    })
+    
+  } catch (error) {
+    return res.json({
+      success : false,
+      message : error.message
+    })
+    
+  }
 }
 
 // function to delete blog

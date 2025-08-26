@@ -5,7 +5,7 @@ import { useAppContext } from '../../context/appContext';
 import toast from 'react-hot-toast';
 
 const Login = () => {
-  const { axios, setToken, navigate } = useAppContext();
+  const { axios, setToken, navigate, setuserId } = useAppContext();
    const [name, setName] =  useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,6 +27,7 @@ const Login = () => {
       if (data.success) {
         setToken(data.accessToken);
         localStorage.setItem('token',data.accessToken);
+        setuserId(data.user._id);
         axios.defaults.headers.common['Authorization'] = data.accessToken;
 
         toast.success("Login successful!");
