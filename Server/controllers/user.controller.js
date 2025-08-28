@@ -1,5 +1,6 @@
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import { verifyCaptcha } from "../Configs/captcha.js";
 
 
 
@@ -112,7 +113,17 @@ const generateAccessandRefreshTokens = async (userId) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, captchatoken  } = req.body;
+
+    // checking for the verification of the captcha
+    const captchaResponse = await verifyCaptcha(captchatoken);
+    if(!captchaResponse.success){
+      return res.json({
+        success : false,
+        message : "Captcha verification failed. Please confirm you are not a robot"
+      })
+      
+    }
 
     if ([name, email, password].some((field) => !field || field.trim() === "")) {
       return res.status(400).json({

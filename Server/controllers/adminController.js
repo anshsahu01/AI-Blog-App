@@ -71,11 +71,18 @@ export const getAdminComments = async (req,res) => {
 
 export const getDashboard = async (req,res) => {
     try {
+        const userId = req.user._id;    
+        if(!userId){
+            res.json({
+                success : false,
+                message : "user not authenticated"
+            })
+        }
         const recentBlogs = await Blog.find({}).sort({createdAt : -1}).limit(5);
-        const blogs = await Blog.countDocuments();
+        const blogs = await Blog.countDocuments({user : userId});
 
         const comments = await Comment.countDocuments();
-        const drafts = await Blog.countDocuments({isPublished : false});
+        const drafts = await Blog.countDocuments({isPublished : false, user : userId});
           
 
         const dashboardData = {
