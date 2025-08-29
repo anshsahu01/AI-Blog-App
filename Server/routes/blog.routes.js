@@ -1,5 +1,5 @@
 import express from 'express'
-import { addBlog, getAllBlogs, getBlogById, deleteBlogById, togglePublish, addComment, getBlogComments, generateContentAI, generateImage, getUserBlogs  } from '../controllers/blogController.js';
+import { addBlog, getAllBlogs, getBlogById, deleteBlogById, togglePublish, addComment, getBlogComments, generateContentAI, generateImage, getUserBlogs, getBlogViews  } from '../controllers/blogController.js';
 import upload from '../middleware/multer.js';
 import auth from '../middleware/auth.js';
 
@@ -11,6 +11,7 @@ blogRouter.get("/user-blogs",auth,getUserBlogs);
 
 blogRouter.get("/all", getAllBlogs);
 blogRouter.get("/:blogId", getBlogById);
+blogRouter.patch("/:blogId/view",getBlogViews);
 blogRouter.post("/delete", auth, deleteBlogById); // ismein auth middleware daala hai taki sirf admin hi blog delete kar sake
 blogRouter.post("/toggle-publish",auth,togglePublish);
 ;

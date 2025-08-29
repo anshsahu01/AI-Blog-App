@@ -247,7 +247,10 @@ export const getBlogById = async (req, res) => {
     try {
 
         const { blogId } = req.params;
-        const blog = await Blog.findById( blogId );
+        const blog = await Blog.findById(
+           blogId,
+
+        );
         if( !blog ){
             return res.json( {
                 status : false,
@@ -268,6 +271,39 @@ export const getBlogById = async (req, res) => {
         })
         
     }
+}
+
+// controller to get and update the views on blog
+export const getBlogViews = async (req,res) => {
+  try {
+
+    const {blogId }= req.params;
+
+    const blog = await Blog.findByIdAndUpdate(
+      blogId,
+     { $inc : {views : 1}},
+     { new : true}
+    )
+
+    if( !blog ){
+      return res.json({
+        success : false,
+        message : "Blog not found"
+      })
+    }
+
+    return res.json({
+      success : true,
+      views : blog.views
+    })
+    
+  } catch (error) {
+    return res.json({
+      success : false,
+      message : error.message
+    })
+    
+  }
 }
 
 //function to get individual user's blogs
