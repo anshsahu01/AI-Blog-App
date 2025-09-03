@@ -7,6 +7,8 @@ import { useAppContext } from "../context/appContext";
 import toast from "react-hot-toast";
 import { Eye } from "lucide-react";
 
+// socket imports
+import { socket } from "../lib/socket";
 function Blog() {
   const { id } = useParams();
   const { axios } = useAppContext();
@@ -25,13 +27,9 @@ function Blog() {
         : toast.error(res.data.message);
 
 
-         const viewedKey = `viewed_${id}`;
-  const alreadyViewed = localStorage.getItem(viewedKey);
-  if(!alreadyViewed){
-    // agar nhi hai to set in the local storage
-    await axios.patch(`/api/blog/${id}/view`)
-    localStorage.setItem(viewedKey, "true");
-  }
+       
+  
+  
 
     } catch (error) {
       toast.error(error.message);
@@ -82,6 +80,29 @@ function Blog() {
   useEffect(() => {
     fetchBlogData();
     fetchComments();
+
+
+    if(!socket.connected){
+      socket.connect();
+    }
+
+    const sessionKey = `viewed_${id}`;
+    const alreadyViewed = sessionStorage.getItem(sessionKey);
+
+    if(!alreadyViewed){
+      socket.emit("incrementView",{blogId : id});
+      sessionStorage.setItem(sessionKey,"1");
+    }
+
+    const handleUpdate = ({count}) => {
+      setData((prev)=>({...prev, views:count}));
+    }
+
+    socket.on("updatedViewCount", handleUpdate);
+
+    return () => {
+      socket.off("updatedViewCount",handleUpdate);
+    }
   }, [id]);
 
   return data ? (

@@ -5,10 +5,25 @@ import connectDB from './Configs/Db.js';
 import adminRouter from './routes/admin.routes.js';
 import blogRouter from './routes/blog.routes.js';
 import userRouter from './routes/user.routes.js';
-
+import http from 'http';
+import {Server} from 'socket.io'
+import initialiseSocket from './Configs/socketio.js';
 
 const app = express();
 //Middlewares
+
+const server = http.createServer(app);
+
+//socket io connection
+
+const io = new Server(server, {
+    cors : {
+        origin : "http://localhost:5173",
+        methods : ["GET","POST"]
+    }
+})
+
+initialiseSocket(io);
 
 //Database Connection
 await connectDB();
@@ -27,7 +42,7 @@ app.use('/api/user',userRouter);
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, ()=>{
+server.listen(PORT, ()=>{
     console.log('server is running on the port '+PORT);
 })
 
