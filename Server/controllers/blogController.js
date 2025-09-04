@@ -6,6 +6,7 @@ import Blog from "../models/blog.model.js";
 import Comment from "../models/comment.model.js";
 import main from "../Configs/gemini.js";
 import { generatePollinationUrl } from "../Configs/pollination.js";
+import { User } from "../models/user.model.js";
 
 
 // export const addBlog = async (req, res) => {
@@ -193,12 +194,15 @@ export const addBlog = async (req, res) => {
     };
 
     const newBlog = await Blog.create(blogData);
-    console.log("Blog created successfully:", newBlog);
+
+    const populateBlog = await Blog.findById(newBlog._id).populate("user", "name");
+  
+    // console.log("Blog created successfully:", newBlog);
 
     return res.json({
       success: true,
       message: "Blog Added Successfully",
-      blog: newBlog,
+      blog: populateBlog,
     });
   } catch (error) {
     console.error("=== ERROR IN ADDBLOG ===");
@@ -250,7 +254,7 @@ export const getBlogById = async (req, res) => {
         const blog = await Blog.findById(
            blogId,
 
-        );
+        ).populate("user", "name");
         if( !blog ){
             return res.json( {
                 status : false,
@@ -274,37 +278,37 @@ export const getBlogById = async (req, res) => {
 }
 
 // controller to get and update the views on blog
-export const getBlogViews = async (req,res) => {
-  try {
+// export const getBlogViews = async (req,res) => {
+//   try {
 
-    const {blogId }= req.params;
+//     const {blogId }= req.params;
 
-    const blog = await Blog.findByIdAndUpdate(
-      blogId,
-     { $inc : {views : 1}},
-     { new : true}
-    )
+//     const blog = await Blog.findByIdAndUpdate(
+//       blogId,
+//      { $inc : {views : 1}},
+//      { new : true}
+//     )
 
-    if( !blog ){
-      return res.json({
-        success : false,
-        message : "Blog not found"
-      })
-    }
+//     if( !blog ){
+//       return res.json({
+//         success : false,
+//         message : "Blog not found"
+//       })
+//     }
 
-    return res.json({
-      success : true,
-      views : blog.views
-    })
+//     return res.json({
+//       success : true,
+//       views : blog.views
+//     })
     
-  } catch (error) {
-    return res.json({
-      success : false,
-      message : error.message
-    })
+//   } catch (error) {
+//     return res.json({
+//       success : false,
+//       message : error.message
+//     })
     
-  }
-}
+//   }
+// }
 
 //function to get individual user's blogs
 

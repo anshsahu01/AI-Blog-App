@@ -26,6 +26,27 @@ const userSchema = new mongoose.Schema({
         minlength: [6, "Password must be at least 6 characters"],
     },
 
+    profilePic : {
+        type : String,
+
+    },
+
+    shortBio : {
+        type : String
+    },
+
+
+
+    followers :[ {
+        type : mongoose.Schema.Types.ObjectId, ref : "User"
+
+    }],
+
+    following : [{
+        type : mongoose.Schema.Types.ObjectId, 
+        ref : "User"
+    }]
+
 }, { timestamps: true });
 
 

@@ -286,3 +286,142 @@ export const logoutUser = async (req, res) => {
 }
 
 
+
+// controller for follow funtionality
+
+export const followUser = async (req,res) => {
+  try {
+     const targetUserId = req.params.id; // jisko follow karna hai
+     const currentuserId = req.body.userId; // jo user follow kar rha hai
+     const targetUser = await User.findById(targetUserId); 
+     // check karenge ki user khud ko hi na follow karle
+     if( currentuserId.toString() === targetUserId.toString()){
+      return res.json({
+        success : false,
+        message : "User cannot follow itself"
+      })
+     }
+
+     // ab check karenge ki user ke following data mein target user hai ya nhi
+
+     if(targetUser.followers.includes(currentuserId)){
+      return res.json({
+        success : false,
+        message : "Already Followed"
+      })
+     }
+
+      targetUser.followers.push(currentuserId);
+      await targetUser.save();
+
+      const currentUser = await User.findById(currentuserId);
+      currentUser.following.push(targetUserId);
+      await currentUser.save();
+
+      
+
+      res.json({
+        success : true,
+        message : "User followed successfully",
+        followersCount : targetUser.followers.length,
+        followingCount : currentUser.following.length
+      })
+  } catch (error) {
+
+    return res.json({
+      success : false,
+      message : error.message
+    })
+    
+  }
+}
+
+
+
+// controller to unfollow user
+
+export const unfollowUser = async (req,res) => {
+  try {
+    const targetUserId = req.params.id;
+    const currentUserId = req.body.userId;
+
+    if(targetUserId.toString() === currentUserId.toString()){
+      return res.json({
+        success : false,
+        message : "user cannot unfollow itself"
+      })
+
+    }
+
+    const targetUser = await User.findById(targetUserId);
+    if(!targetUser){
+      return res.json({
+        success : false,
+        message : "User not available"
+      })
+    }
+
+
+    if(!targetUser.followers.includes(currentUserId)){
+      return res.json({
+        success : false,
+        message : "User not in the follow list"
+      })
+    }
+
+    // ismein .filter method ka use karenge
+
+    targetUser.followers = targetUser.followers.filter((id)=>(
+       id!== currentUserId
+    ))
+
+    await targetUser.save();
+
+    const currentUser = await User.findById(currentUserId);
+    currentUser.following = currentUser.following.filter((id) => (
+      id!== targetUserId
+    ))
+
+    await currentUser.save();
+
+
+    return res.json({
+      success : true,
+      message : "Unfollowed Successfully",
+      followersCount : targetUser.followers.length,
+      followingCount : currentUser.following.length
+    })
+
+    
+  } catch (error) {
+    return res.json({
+      success : false,
+      message : error.message
+
+    })
+  }
+}
+
+
+// controller to fetch followers
+
+// const fetchFollowers = async (req,res) => {
+
+//   try {
+
+//     const userId = req.body.userId || req.params.id;
+
+//     const user = await User.findById(userId);
+
+//     if(!user){
+//       return res.json({
+//         success : false,
+//         message : "User not available"
+//       })
+//     }
+    
+//   } catch (error) {
+    
+//   }
+// }
+
