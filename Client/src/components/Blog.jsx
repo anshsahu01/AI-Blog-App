@@ -11,7 +11,7 @@ import { Eye } from "lucide-react";
 import { socket } from "../lib/socket";
 function Blog() {
   const { id } = useParams();
-  const { axios } = useAppContext();
+  const { axios, userId} = useAppContext();
 
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
@@ -79,6 +79,35 @@ function Blog() {
     }
   };
 
+
+  // handling follow button
+
+  // const handleFollow = async ()=>{
+  //   try {
+
+  //     //flow
+  //     // pehle check karna hoga ki targeted user already followed hai ya nhi
+  //     // uske liye following wali api call karke check karenge ki target user hai ya nhi
+  //     // agar hai to button per following dikhayenge
+  //     // agar nhi hai to follow dikhega
+  //     // and follow button click hone per follow wali api call hogi
+  //     // jismein current user Id and targeted user Id jayegi
+
+  //     // userId to context se arhi hai
+  //     // targeted user ki Id ?
+
+  //     const res = await axios.post("/api/user/follow/${data.user._id}");
+  //     if(res){
+  //       console.log("--RES--",res);
+  //     }
+
+      
+      
+  //   } catch (error) {
+      
+  //   }
+  // }
+
   useEffect(() => {
     console.log(data);
     fetchBlogData();
@@ -118,6 +147,14 @@ function Blog() {
 
       {/* Blog Title & Details */}
       <div className="text-center mt-20 text-gray-600">
+
+          <div className="flex items-center justify-center gap-4 mb-2">
+    <span className="font-medium text-gray-700">{data.user.name}</span>
+    <button className="py-1 px-4 border rounded-full text-sm text-blue-700 font-medium hover:bg-blue-50">
+      Follow
+    </button>
+  </div>
+       
         <p className="py-4 font-medium">
           Published on {Moment(data.createdAt).format("MMMM Do YYYY")}
         </p>
@@ -125,7 +162,7 @@ function Blog() {
           {data.title}
         </h1>
       
-        <h2 className="my-5 max-w-lg truncate mx-auto">{data.subtitle}</h2>
+        <h2 className="my-5 max-w-lg mx-auto">{data.subTitle}</h2>
   
         <p className="inline-block py-1 px-4 rounded-full mb-6 border text-sm bg-blue-700/5 font-medium">
           {data.category}

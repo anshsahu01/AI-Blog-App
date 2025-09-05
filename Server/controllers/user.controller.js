@@ -405,23 +405,118 @@ export const unfollowUser = async (req,res) => {
 
 // controller to fetch followers
 
-// const fetchFollowers = async (req,res) => {
+export const fetchFollowers = async (req, res) => {
+  try {
+    const userId = req.body.userId || req.params.id;
 
-//   try {
+    // pagination setup
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-//     const userId = req.body.userId || req.params.id;
+    // find user with followers field only
+    const user = await User.findById(userId).select("followers");
 
-//     const user = await User.findById(userId);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not available"
+      });
+    }
 
-//     if(!user){
-//       return res.json({
-//         success : false,
-//         message : "User not available"
-//       })
-//     }
+    const followerCount = user.followers.length;
+
+    if (followerCount === 0) {
+      return res.json({
+        success: true,
+        message: "User has no follower",
+        followers: [],
+        followerCount
+      });
+    }
+
+    // paginate followers
+    const followers = await User.find({ _id: { $in: user.followers } })
+      .skip(skip)
+      .limit(limit)
+      .select("name"); // only return needed fields
+
+    return res.json({
+      success: true,
+      message: "Followers fetched successfully",
+      followers,
+      followerCount,
+      currentPage: page,
+      totalPages: Math.ceil(followerCount / limit)
+    });
+
+  } catch (error) {
+    return res.json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
+// controller to fetch following list
+
+export const fetchFollowing = async (req,res) => {
+  try {
+
+    const userId = req.body.userId || req.params.id;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1)*limit;
+
+    const user = await User.findById(userId).select("following");
+
+    if(!user){
+      return res.json({
+        success : false,
+        message : "User not found"
+      })
+    }
+
+    const followingCount = user.following.length;
+
+    if(followingCount === 0){
+      return res.json({
+        success : true,
+        message : "User is not following anyone",
+        following : [],
+        followingCount
+      })
+    }
+
+
+    // paginate followers
+
+    const following = await User.findById({_id : { $in : user.following}})
+    .skip(skip)
+    .limit(limit)
+    .select("name");
+
+
+    return res.json({
+      success : true,
+      message : "Following fetched successfully",
+      following,
+      followingCount,
+      currentPage : page,
+      totalPages : Math.ceil(followingCount/limit)
+    })
+
     
-//   } catch (error) {
+  } catch (error) {
+
+    return res.json({
+      success : false,
+      message : error.message
+    })
     
-//   }
-// }
+  }
+}
+
 
