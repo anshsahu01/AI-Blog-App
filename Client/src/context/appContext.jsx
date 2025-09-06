@@ -1,3 +1,5 @@
+
+
 import { createContext, useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +14,6 @@ export const AppProvider = ({ children }) => {
   const [blogs, setBlogs] = useState([]);
   const [input, setInput] = useState("");
   const [userId, setuserId] = useState("");
-  // const [userBlogs, setUserBlogs] = useState([]);
   const navigate = useNavigate();
 
   const fetchBlogs = async () => {
@@ -27,41 +28,72 @@ export const AppProvider = ({ children }) => {
   // to fetch user blogs 
   const fetchUserBlogs = async () => {
     try {
-      const res = await axios.get("/api/blog/user-blogs",{
-        headers : {
-          Authorization : token,
+      const res = await axios.get("/api/blog/user-blogs", {
+        headers: {
+          Authorization: token,
         }
       });
-      if(!res){
+      if (!res) {
         console.log("Error in fetching user blogs");
-
+        return [];
       }
       const data = res.data;
-      if(data.success){
-       
+      if (data.success) {
         return data.blogs;
-
-      }else{
+      } else {
         toast.error(data.message);
         return [];
       }
-
-
-      
     } catch (error) {
       toast.error(error.message);
-      return;
-      
+      return [];
     }
   }
 
-  useEffect(() => {
-    
+  // Custom setToken function that also handles userId
+  const handleSetToken = (newToken) => {
+    setToken(newToken);
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      delete axios.defaults.headers.common["Authorization"];
+      setuserId("");
+    }
+  };
 
+  // Custom setUserId function that persists to localStorage
+  const handleSetUserId = (newUserId) => {
+    setuserId(newUserId);
+    if (newUserId) {
+      localStorage.setItem("userId", newUserId);
+    } else {
+      localStorage.removeItem("userId");
+    }
+  };
+
+  useEffect(() => {
+    // Restore token and userId from localStorage
     const storedToken = localStorage.getItem("token");
+    const storedUserId = localStorage.getItem("userId");
+    
+    console.log("Stored token:", storedToken);
+    console.log("Stored userId:", storedUserId);
+    
     if (storedToken) {
       setToken(storedToken);
       axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+    }
+    
+    if (storedUserId) {
+      setuserId(storedUserId);
+      console.log("UserId restored from localStorage:", storedUserId);
+    }
+    
+    // Only fetch blogs after setting up auth
+    if (storedToken) {
       fetchBlogs();
     }
   }, []);
@@ -70,13 +102,13 @@ export const AppProvider = ({ children }) => {
     axios,
     navigate,
     token,
-    setToken,
+    setToken: handleSetToken, // Use custom handler
     blogs,
     setBlogs,
     input,
     setInput,
     userId,
-    setuserId,
+    setuserId: handleSetUserId, // Use custom handler
     fetchUserBlogs
   };
 

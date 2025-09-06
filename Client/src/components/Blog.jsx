@@ -9,46 +9,48 @@ import { Eye } from "lucide-react";
 
 // socket imports
 import { socket } from "../lib/socket";
+
 function Blog() {
   const { id } = useParams();
-  const { axios, userId} = useAppContext();
+  const { axios, userId } = useAppContext();
 
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
 
+  // state for follow related features
+  const [isFollowing, setIsfollowing] = useState(false);
+
   // Fetch blog details
   const fetchBlogData = async () => {
     try {
       const res = await axios.get(`/api/blog/${id}`);
-      res.data.success
-        ? setData(res.data.blog)
-        : toast.error(res.data.message);
-
-        console.log(data);
-
-
-       
-  
-  
-
+      if (res.data.success) {
+        setData(res.data.blog);
+        
+        // Check if current user follows the blog author
+        if (res.data.blog?.user?.followers?.includes(userId)) {
+          setIsfollowing(true);
+        } else {
+          setIsfollowing(false);
+        }
+      } else {
+        toast.error(res.data.message);
+      }
     } catch (error) {
       toast.error(error.message);
     }
   };
 
-
- 
-
   // Fetch comments
   const fetchComments = async () => {
     try {
-      const {data} = await axios.post("/api/blog/comments", { blog: id });
-      if(data){
+      const { data } = await axios.post("/api/blog/comments", { blog: id });
+      if (data) {
         console.log(data);
       }
-     
+
       data.success
         ? setComments(data.comments)
         : toast.error(data.message);
@@ -61,81 +63,107 @@ function Blog() {
   const submitComment = async (e) => {
     e.preventDefault();
     try {
-      const {data}= await axios.post("/api/blog/add-comment", {
+      const { data } = await axios.post("/api/blog/add-comment", {
         blog: id,
         name,
         content: comment,
       });
       if (data.success) {
-        // setComments((prev) => [res.data.comment, ...prev]);
         setName("");
         setComment("");
         toast.success("Comment added for review!");
+        // Optionally refresh comments
+        fetchComments();
       } else {
-        toast.error(res.data.message);
+        toast.error(data.message);
       }
     } catch (error) {
       toast.error(error.message);
     }
   };
 
+  // Handle follow button
+  const handleFollow = async () => {
+    try {
+      console.log("button clicked");
 
-  // handling follow button
+      const targetUserId = data?.user?._id;
+      if (!targetUserId) {
+        console.log("--Target user not found");
+        return;
+      }
+      console.log("--AUTHOR ID--",targetUserId);
+      console.log("--USER ID--",userId);
 
-  // const handleFollow = async ()=>{
-  //   try {
+      if (isFollowing) {
+        const res = await axios.post(`/api/user/unfollow/${targetUserId}`, {
+          userId: userId // Send current user ID in request body
+        });
 
-  //     //flow
-  //     // pehle check karna hoga ki targeted user already followed hai ya nhi
-  //     // uske liye following wali api call karke check karenge ki target user hai ya nhi
-  //     // agar hai to button per following dikhayenge
-  //     // agar nhi hai to follow dikhega
-  //     // and follow button click hone per follow wali api call hogi
-  //     // jismein current user Id and targeted user Id jayegi
+        if (!res) {
+          console.log("No response received");
+          return;
+        }
 
-  //     // userId to context se arhi hai
-  //     // targeted user ki Id ?
+        if (res.data.success) {
+          toast.success(`Unfollowed ${data.user.name}`);
+          setIsfollowing(false);
+        } else {
+          console.log("--ERROR IN UNFOLLOW--",res.data.message);
+          toast.error(res.data.message);
+        }
+      } else {
+        const res = await axios.post(`/api/user/follow/${targetUserId}`, {
+          userId: userId // Send current user ID in request body
+        });
 
-  //     const res = await axios.post("/api/user/follow/${data.user._id}");
-  //     if(res){
-  //       console.log("--RES--",res);
-  //     }
+        if (!res) {
+          console.log("No response received");
+          return;
+        }
 
-      
-      
-  //   } catch (error) {
-      
-  //   }
-  // }
+        if (res.data.success) {
+          toast.success(`Following ${data.user.name}`);
+          setIsfollowing(true);
+        } else {
+          console.log(res.data.message);
+          toast.error(res.data.message);
+        }
+      }
+    } catch (error) {
+      console.log("---FOLLOW ERROR-- ", error);
+      toast.error("Something went wrong");
+    }
+  };
 
   useEffect(() => {
-    console.log(data);
+    // Initial data fetch
     fetchBlogData();
     fetchComments();
 
-
-    if(!socket.connected){
+    // Socket connection and view tracking
+    if (!socket.connected) {
       socket.connect();
     }
 
     const sessionKey = `viewed_${id}`;
     const alreadyViewed = sessionStorage.getItem(sessionKey);
 
-    if(!alreadyViewed){
-      socket.emit("incrementView",{blogId : id});
-      sessionStorage.setItem(sessionKey,"1");
+    if (!alreadyViewed) {
+      socket.emit("incrementView", { blogId: id });
+      sessionStorage.setItem(sessionKey, "1");
     }
 
-    const handleUpdate = ({count}) => {
-      setData((prev)=>({...prev, views:count}));
-    }
+    const handleUpdate = ({ count }) => {
+      setData((prev) => ({ ...prev, views: count }));
+    };
 
     socket.on("updatedViewCount", handleUpdate);
 
     return () => {
-      socket.off("updatedViewCount",handleUpdate);
-    }
-  }, [id]);
+      socket.off("updatedViewCount", handleUpdate);
+    };
+  }, [id]); // Only depend on 'id' to avoid infinite loop
 
   return data ? (
     <div className="relative">
@@ -147,33 +175,34 @@ function Blog() {
 
       {/* Blog Title & Details */}
       <div className="text-center mt-20 text-gray-600">
+        <div className="flex items-center justify-center gap-4 mb-2">
+          <span className="font-medium text-gray-700">{data.user.name}</span>
+          <button
+            onClick={handleFollow}
+            className="py-1 px-4 border rounded-full text-sm text-blue-700 font-medium hover:bg-blue-50"
+          >
+            {isFollowing ? "Following" : "Follow"}
+          </button>
+        </div>
 
-          <div className="flex items-center justify-center gap-4 mb-2">
-    <span className="font-medium text-gray-700">{data.user.name}</span>
-    <button className="py-1 px-4 border rounded-full text-sm text-blue-700 font-medium hover:bg-blue-50">
-      Follow
-    </button>
-  </div>
-       
         <p className="py-4 font-medium">
           Published on {Moment(data.createdAt).format("MMMM Do YYYY")}
         </p>
         <h1 className="text-2xl sm:text-5xl font-semibold max-w-2xl mx-auto text-gray-800">
           {data.title}
         </h1>
-      
+
         <h2 className="my-5 max-w-lg mx-auto">{data.subTitle}</h2>
-  
+
         <p className="inline-block py-1 px-4 rounded-full mb-6 border text-sm bg-blue-700/5 font-medium">
           {data.category}
         </p>
-     {/* section for views */}
-
-      <div className="flex items-center justify-center gap-2 text-gray-700 mb-6">
-        <Eye size={20}/>
-        <span className="text-sm font-medium">{data.views} views</span>
-      </div>
-       
+        
+        {/* section for views */}
+        <div className="flex items-center justify-center gap-2 text-gray-700 mb-6">
+          <Eye size={20} />
+          <span className="text-sm font-medium">{data.views} views</span>
+        </div>
       </div>
 
       {/* Blog Image */}
@@ -192,9 +221,7 @@ function Blog() {
 
       {/* Comments */}
       <div className="mt-14 mb-10 max-w-3xl mx-auto">
-        <p className="font-semibold mb-4">
-          Comments ({comments.length})
-        </p>
+        <p className="font-semibold mb-4">Comments ({comments.length})</p>
         <div className="flex flex-col gap-4 mb-8">
           {comments.map((item, idx) => (
             <div

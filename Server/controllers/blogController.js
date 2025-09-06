@@ -254,7 +254,7 @@ export const getBlogById = async (req, res) => {
         const blog = await Blog.findById(
            blogId,
 
-        ).populate("user", "name");
+        ).populate("user", "name followers");
         if( !blog ){
             return res.json( {
                 status : false,

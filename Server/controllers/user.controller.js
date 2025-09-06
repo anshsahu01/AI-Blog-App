@@ -340,67 +340,74 @@ export const followUser = async (req,res) => {
 
 // controller to unfollow user
 
-export const unfollowUser = async (req,res) => {
+export const unfollowUser = async (req, res) => {
   try {
     const targetUserId = req.params.id;
     const currentUserId = req.body.userId;
 
-    if(targetUserId.toString() === currentUserId.toString()){
+    if (targetUserId.toString() === currentUserId.toString()) {
       return res.json({
-        success : false,
-        message : "user cannot unfollow itself"
-      })
-
+        success: false,
+        message: "User cannot unfollow itself"
+      });
     }
 
     const targetUser = await User.findById(targetUserId);
-    if(!targetUser){
+    if (!targetUser) {
       return res.json({
-        success : false,
-        message : "User not available"
-      })
+        success: false,
+        message: "User not available"
+      });
     }
 
-
-    if(!targetUser.followers.includes(currentUserId)){
+    if (!targetUser.followers.includes(currentUserId)) {
       return res.json({
-        success : false,
-        message : "User not in the follow list"
-      })
+        success: false,
+        message: "User not in the follow list"
+      });
     }
 
-    // ismein .filter method ka use karenge
-
-    targetUser.followers = targetUser.followers.filter((id)=>(
-       id!== currentUserId
-    ))
+    // Fix: Convert ObjectIds to strings for proper comparison
+    targetUser.followers = targetUser.followers.filter((id) => 
+      id.toString() !== currentUserId.toString()
+    );
 
     await targetUser.save();
 
     const currentUser = await User.findById(currentUserId);
-    currentUser.following = currentUser.following.filter((id) => (
-      id!== targetUserId
-    ))
+    if (!currentUser) {
+      return res.json({
+        success: false,
+        message: "Current user not found"
+      });
+    }
+
+    // Fix: Convert ObjectIds to strings for proper comparison
+    currentUser.following = currentUser.following.filter((id) => 
+      id.toString() !== targetUserId.toString()
+    );
 
     await currentUser.save();
 
+    console.log("Unfollow successful:");
+    console.log("Target user followers:", targetUser.followers.length);
+    console.log("Current user following:", currentUser.following.length);
 
     return res.json({
-      success : true,
-      message : "Unfollowed Successfully",
-      followersCount : targetUser.followers.length,
-      followingCount : currentUser.following.length
-    })
+      success: true,
+      message: "Unfollowed Successfully",
+      followersCount: targetUser.followers.length,
+      followingCount: currentUser.following.length
+    });
 
-    
   } catch (error) {
+    console.log("Unfollow error:", error);
     return res.json({
-      success : false,
-      message : error.message
-
-    })
+      success: false,
+      message: error.message
+    });
   }
-}
+};
 
 
 // controller to fetch followers

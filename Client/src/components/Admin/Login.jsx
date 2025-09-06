@@ -1,43 +1,52 @@
-
-
 import React, { useState } from 'react';
 import { useAppContext } from '../../context/appContext';
 import toast from 'react-hot-toast';
 
 const Login = () => {
   const { axios, setToken, navigate, setuserId } = useAppContext();
-   const [name, setName] =  useState('');
+
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // stop page reload
+
     try {
       setLoading(true);
-      const resp = await axios.post('/api/user/login', { name, email, password, });
+      const resp = await axios.post('/api/user/login', { 
+        name, 
+        email, 
+        password 
+      });
 
       if (!resp) {
         toast.error("No response from server");
         return;
       }
+
       const data = resp.data;
-      console.log("---DATA---",data);
+      console.log("---LOGIN DATA---", data);
 
       if (data.success) {
-        setToken(data.accessToken);
-        localStorage.setItem('token',data.accessToken);
-        setuserId(data.user._id);
-        axios.defaults.headers.common['Authorization'] = data.accessToken;
 
+        setToken(data.accessToken);
+        
+
+        setuserId(data.user._id);
+        
+        console.log("User ID set:", data.user._id);
+        
         toast.success("Login successful!");
-        navigate('/admin'); // change path as needed
+        navigate('/admin');
       } else {
         toast.error(data.message || "Login failed");
       }
     } catch (error) {
+      console.log("Login error:", error);
       toast.error(error.response?.data?.message || error.message);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -55,8 +64,8 @@ const Login = () => {
             </p>
           </div>
           <form onSubmit={handleSubmit} className="mt-6 w-full sm:max-w-md text-gray-600">
-              {/* name */}
-             <div className="flex flex-col">
+            {/* name */}
+            <div className="flex flex-col">
               <label>Name</label>
               <input
                 onChange={(e) => setName(e.target.value)}
@@ -68,7 +77,7 @@ const Login = () => {
               />
             </div>
 
-                           {/*email */}
+            {/*email */}
             <div className="flex flex-col">
               <label>Email</label>
               <input
@@ -80,7 +89,8 @@ const Login = () => {
                 className="border-b-2 border-gray-300 p-2 outline-none mb-6"
               />
             </div>
-                             {/* password */}
+
+            {/* password */}
             <div className="flex flex-col">
               <label>Password</label>
               <input
@@ -94,23 +104,22 @@ const Login = () => {
             </div>
             <button
               type="submit"
-              className="w-full py-3 bg-blue-700 text-white rounded cursor-pointer hover:bg-blue-700/90"
+              disabled={loading}
+              className="w-full py-3 bg-blue-700 text-white rounded cursor-pointer hover:bg-blue-700/90 disabled:opacity-50"
             >
-              Login
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
         </div>
       </div>
 
-           {loading && (
-  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-    <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-  </div>
-)}
-      
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default Login;
-

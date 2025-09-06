@@ -12,8 +12,8 @@ userRouter.post("/logout",auth,logoutUser);
 
 // api for follow unfollow and fetch followers
 
-userRouter.post("/follow",followUser);
-userRouter.post("/unfollow",unfollowUser);
+userRouter.post("/follow/:id",followUser);
+userRouter.post("/unfollow/:id",unfollowUser);
 userRouter.get("/:id/followers", fetchFollowers);
 userRouter.get("/:id/following",fetchFollowing)
 
