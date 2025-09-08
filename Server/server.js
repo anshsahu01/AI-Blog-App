@@ -8,6 +8,7 @@ import userRouter from './routes/user.routes.js';
 import http from 'http';
 import {Server} from 'socket.io'
 import initialiseSocket from './Configs/socketio.js';
+import { limiter } from './Configs/ratelimiter.js';
 
 const app = express();
 //Middlewares
@@ -24,6 +25,10 @@ const io = new Server(server, {
 })
 
 initialiseSocket(io);
+
+// express limiter
+
+app.use(limiter);
 
 //Database Connection
 await connectDB();
