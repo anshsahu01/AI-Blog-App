@@ -1,6 +1,5 @@
-
-
 import Blog from "../models/blog.model.js";
+import { Clap } from "../models/clap.model.js";
 
 const initialiseSocket = (io) => {
   // temporary storage to keep track of users who have visited the blog
@@ -53,6 +52,59 @@ const initialiseSocket = (io) => {
         socket.emit("error", { message: "Could not process your view" });
       }
     });
+
+
+
+
+    // HANDLE CLAPS  SETUP
+
+    socket.on("addClap", async({blogId, userId, count = 1})=>{
+
+      try {
+        if(!userId){
+          console.log("user id not received");
+          return;
+        }
+
+        const roomName = `blog.${blogId}`;
+        socket.join(roomName);
+
+        // finding user claps to update or create
+
+        let userClap = await Clap.findOne({blogId, userId});
+
+
+        if(userClap){
+          userClap.claps += count
+          await userClap.save();
+        }else{
+          await Clap.create({blogId, userId, claps : count});
+        }
+
+
+        // now in blog update the total blog count
+
+        const updatedBlog = await Blog.findByIdAndUpdate(
+          blogId,
+          {$inc : {clapsCount : count}},
+          { new : true}
+        )
+
+        if(updatedBlog){
+          io.to(roomName).emit("updatedClapCount", {
+            blogId,
+            totalClaps : updatedBlog.clapsCount,
+          })
+        }
+
+        
+      } catch (error) {
+
+        console.log("Error in addding Clap", error);
+        socket.emit("error",{message : "Could not process your clap"});
+        
+      }
+    })
 
     // disconnect handler (outside incrementView)
     socket.on("disconnect", () => {

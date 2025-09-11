@@ -160,9 +160,27 @@ function Blog() {
 
     socket.on("updatedViewCount", handleUpdate);
 
-    return () => {
-      socket.off("updatedViewCount", handleUpdate);
+    // for claps
+
+    
+    const handleClapUpdate = ({blogId : updateId, totalClaps}) => {
+
+      if(updateId=== id){
+        setData((prev)=> ({...prev, clapsCount : totalClaps}));
+      }
     };
+
+    socket.on("updatedClapCount", handleClapUpdate);
+
+    return ()=>{
+      socket.off("updatedClapCount", handleClapUpdate);
+        socket.off("updatedViewCount", handleUpdate);
+    }
+
+ 
+
+
+
   }, [id]); // Only depend on 'id' to avoid infinite loop
 
   return data ? (
@@ -213,6 +231,42 @@ function Blog() {
           className="rounded-3xl mb-5 w-full"
         />
       </div>
+
+      {/* Section for Claps */}
+
+     {/* Section for Claps, Share, Save */}
+<div className="flex items-center justify-between max-w-5xl mx-auto mt-4 px-4">
+  {/* Left: Claps */}
+  <div className="flex items-center gap-3">
+    <button
+      onClick={() => socket.emit("addClap", { blogId: id,userId })}
+      className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full hover:bg-blue-100 transition"
+    >
+      <img src="/clap.png" alt="clap" className="w-5 h-5" />
+      <span className="font-medium">{data?.clapsCount || 0}</span>
+    </button>
+  </div>
+
+  {/* Right: Share & Save */}
+  <div className="flex items-center gap-4">
+    <button
+      onClick={() => navigator.clipboard.writeText(window.location.href)}
+      className="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition"
+    >
+      <img src="/share.png" alt="share" className="w-5 h-5" />
+      <span className="text-sm">Share</span>
+    </button>
+
+    <button
+      onClick={() => toast.success("Saved to your reading list!")}
+      className="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition"
+    >
+      <img src="/save.png" alt="save" className="w-5 h-5" />
+      <span className="text-sm">Save</span>
+    </button>
+  </div>
+</div>
+
 
       {/* Blog Content */}
       <div className="max-w-3xl mx-auto text-gray-700 leading-relaxed">

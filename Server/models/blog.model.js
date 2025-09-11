@@ -41,6 +41,11 @@ const blogSchema = new mongoose.Schema({
     views : {
         type : Number,
         default : 0
+    },
+
+    clapsCount : {
+        type : Number,
+        default : 0
     }
 
 
