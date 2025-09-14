@@ -7,6 +7,7 @@ import Comments from './pages/Admin/Comments'
 import Login from './components/Admin/Login.jsx'
 import ListBlog from './pages/Admin/ListBlog'
 import FollowList from './components/Admin/followList.jsx'
+import FollowingList from './components/Admin/followingList.jsx'
 // Page Import 
 import Blog from './pages/Blog'
 import Home from './pages/Home'
@@ -18,6 +19,7 @@ import SignUpPage from './pages/SignUp.jsx'
 import 'quill/dist/quill.snow.css'
 import {Toaster} from 'react-hot-toast'
 import { useAppContext } from './context/appContext'
+import followingList from './components/Admin/followingList.jsx'
 
 const App = () => {
 
@@ -40,6 +42,7 @@ const App = () => {
          <Route path='comments' element={<Comments/>}/>
          <Route path='listblog' element={<ListBlog/>}/>
          <Route path="followers" element={<FollowList/>}/>
+         <Route path="following" element={<FollowingList/>}/>
 
 
        </Route>

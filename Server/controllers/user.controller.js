@@ -474,7 +474,7 @@ export const fetchFollowers = async (req, res) => {
 export const fetchFollowing = async (req,res) => {
   try {
 
-    const userId = req.body.userId;
+      const userId = req.user._id;
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
@@ -503,7 +503,7 @@ export const fetchFollowing = async (req,res) => {
 
     // paginate followers
 
-    const following = await User.findById({_id : { $in : user.following}})
+    const following = await User.find({_id : { $in : user.following}})
     .skip(skip)
     .limit(limit)
     .select("name");

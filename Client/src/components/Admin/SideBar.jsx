@@ -66,6 +66,19 @@ const SideBar = () => {
         <p className="hidden md:inline-block">Followers</p>
       </NavLink>
 
+      
+      <NavLink
+        to="/admin/following"
+        className={({ isActive }) =>
+          `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer ${
+            isActive && "bg-purple-200 border-r-4 "
+          }`
+        }
+      >
+        <img src="/following.png" alt="following-icon" className="min-w-4 w-5" />
+        <p className="hidden md:inline-block">Following</p>
+      </NavLink>
+
     
     </div>
   );
