@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
+
 const SideBar = () => {
   return (
     <div className="flex flex-col border-r border-gray-200 min-h-full pt-6">
@@ -52,6 +53,20 @@ const SideBar = () => {
         <img src="/comment_icon.svg" alt="listicon" className="min-w-4 w-5" />
         <p className="hidden md:inline-block">Comments</p>
       </NavLink>
+
+      <NavLink
+        to="/admin/followers"
+        className={({ isActive }) =>
+          `flex items-center gap-3 py-3.5 px-3 md:px-9 md:min-w-64 cursor-pointer ${
+            isActive && "bg-purple-200 border-r-4 "
+          }`
+        }
+      >
+        <img src="/follower.png" alt="follower-icon" className="min-w-4 w-5" />
+        <p className="hidden md:inline-block">Followers</p>
+      </NavLink>
+
+    
     </div>
   );
 };

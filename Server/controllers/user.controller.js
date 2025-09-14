@@ -414,7 +414,7 @@ export const unfollowUser = async (req, res) => {
 
 export const fetchFollowers = async (req, res) => {
   try {
-    const userId = req.body.userId || req.params.id;
+    const userId = req.user._id;
 
     // pagination setup
     const page = parseInt(req.query.page) || 1;
@@ -423,6 +423,9 @@ export const fetchFollowers = async (req, res) => {
 
     // find user with followers field only
     const user = await User.findById(userId).select("followers");
+    if(user){
+      console.log(user);
+    }
 
     if (!user) {
       return res.json({
@@ -471,7 +474,7 @@ export const fetchFollowers = async (req, res) => {
 export const fetchFollowing = async (req,res) => {
   try {
 
-    const userId = req.body.userId || req.params.id;
+    const userId = req.body.userId;
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;

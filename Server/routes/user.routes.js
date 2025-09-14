@@ -14,7 +14,7 @@ userRouter.post("/logout",auth,logoutUser);
 
 userRouter.post("/follow/:id",followUser);
 userRouter.post("/unfollow/:id",unfollowUser);
-userRouter.get("/:id/followers", fetchFollowers);
+userRouter.get("/followers",auth, fetchFollowers);
 userRouter.get("/:id/following",fetchFollowing)
 
 export default userRouter;

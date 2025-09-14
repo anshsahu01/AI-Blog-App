@@ -1,11 +1,10 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Moment from "moment";
 import { useAppContext } from "../context/appContext";
 import toast from "react-hot-toast";
 import { Eye } from "lucide-react";
+import { motion } from "framer-motion";
 
 // socket imports
 import { socket } from "../lib/socket";
@@ -28,7 +27,7 @@ function Blog() {
       const res = await axios.get(`/api/blog/${id}`);
       if (res.data.success) {
         setData(res.data.blog);
-        
+
         // Check if current user follows the blog author
         if (res.data.blog?.user?.followers?.includes(userId)) {
           setIsfollowing(true);
@@ -51,9 +50,7 @@ function Blog() {
         console.log(data);
       }
 
-      data.success
-        ? setComments(data.comments)
-        : toast.error(data.message);
+      data.success ? setComments(data.comments) : toast.error(data.message);
     } catch (error) {
       toast.error(error.message);
     }
@@ -92,12 +89,12 @@ function Blog() {
         console.log("--Target user not found");
         return;
       }
-      console.log("--AUTHOR ID--",targetUserId);
-      console.log("--USER ID--",userId);
+      console.log("--AUTHOR ID--", targetUserId);
+      console.log("--USER ID--", userId);
 
       if (isFollowing) {
         const res = await axios.post(`/api/user/unfollow/${targetUserId}`, {
-          userId: userId // Send current user ID in request body
+          userId: userId, // Send current user ID in request body
         });
 
         if (!res) {
@@ -109,12 +106,12 @@ function Blog() {
           toast.success(`Unfollowed ${data.user.name}`);
           setIsfollowing(false);
         } else {
-          console.log("--ERROR IN UNFOLLOW--",res.data.message);
+          console.log("--ERROR IN UNFOLLOW--", res.data.message);
           toast.error(res.data.message);
         }
       } else {
         const res = await axios.post(`/api/user/follow/${targetUserId}`, {
-          userId: userId // Send current user ID in request body
+          userId: userId, // Send current user ID in request body
         });
 
         if (!res) {
@@ -162,25 +159,18 @@ function Blog() {
 
     // for claps
 
-    
-    const handleClapUpdate = ({blogId : updateId, totalClaps}) => {
-
-      if(updateId=== id){
-        setData((prev)=> ({...prev, clapsCount : totalClaps}));
+    const handleClapUpdate = ({ blogId: updateId, totalClaps }) => {
+      if (updateId === id) {
+        setData((prev) => ({ ...prev, clapsCount: totalClaps }));
       }
     };
 
     socket.on("updatedClapCount", handleClapUpdate);
 
-    return ()=>{
+    return () => {
       socket.off("updatedClapCount", handleClapUpdate);
-        socket.off("updatedViewCount", handleUpdate);
-    }
-
- 
-
-
-
+      socket.off("updatedViewCount", handleUpdate);
+    };
   }, [id]); // Only depend on 'id' to avoid infinite loop
 
   return data ? (
@@ -215,7 +205,7 @@ function Blog() {
         <p className="inline-block py-1 px-4 rounded-full mb-6 border text-sm bg-blue-700/5 font-medium">
           {data.category}
         </p>
-        
+
         {/* section for views */}
         <div className="flex items-center justify-center gap-2 text-gray-700 mb-6">
           <Eye size={20} />
@@ -234,39 +224,40 @@ function Blog() {
 
       {/* Section for Claps */}
 
-     {/* Section for Claps, Share, Save */}
-<div className="flex items-center justify-between max-w-5xl mx-auto mt-4 px-4">
-  {/* Left: Claps */}
-  <div className="flex items-center gap-3">
-    <button
-      onClick={() => socket.emit("addClap", { blogId: id,userId })}
-      className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full hover:bg-blue-100 transition"
-    >
-      <img src="/clap.png" alt="clap" className="w-5 h-5" />
-      <span className="font-medium">{data?.clapsCount || 0}</span>
-    </button>
-  </div>
+      {/* Section for Claps, Share, Save */}
+      <div className="flex items-center justify-between max-w-5xl mx-auto mt-4 px-4">
+        {/* Left: Claps */}
+        <div className="flex items-center gap-3">
+         <motion.button
+  onClick={() => socket.emit("addClap", { blogId: id, userId })}
+  whileTap={{ scale: 1.3 }}
+  transition={{ type: "spring", stiffness: 300 }}
+  className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full hover:bg-blue-100 "
+>
+  <img src="/clap.png" alt="clap" className="w-5 h-5" />
+  <span className="font-medium">{data?.clapsCount || 0}</span>
+</motion.button>
+        </div>
 
-  {/* Right: Share & Save */}
-  <div className="flex items-center gap-4">
-    <button
-      onClick={() => navigator.clipboard.writeText(window.location.href)}
-      className="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition"
-    >
-      <img src="/share.png" alt="share" className="w-5 h-5" />
-      <span className="text-sm">Share</span>
-    </button>
+        {/* Right: Share & Save */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigator.clipboard.writeText(window.location.href)}
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition"
+          >
+            <img src="/share.png" alt="share" className="w-5 h-5" />
+            <span className="text-sm">Share</span>
+          </button>
 
-    <button
-      onClick={() => toast.success("Saved to your reading list!")}
-      className="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition"
-    >
-      <img src="/save.png" alt="save" className="w-5 h-5" />
-      <span className="text-sm">Save</span>
-    </button>
-  </div>
-</div>
-
+          <button
+            onClick={() => toast.success("Saved to your reading list!")}
+            className="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition"
+          >
+            <img src="/save.png" alt="save" className="w-5 h-5" />
+            <span className="text-sm">Save</span>
+          </button>
+        </div>
+      </div>
 
       {/* Blog Content */}
       <div className="max-w-3xl mx-auto text-gray-700 leading-relaxed">
@@ -333,4 +324,3 @@ function Blog() {
 }
 
 export default Blog;
-
