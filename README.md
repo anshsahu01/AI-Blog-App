@@ -9,7 +9,7 @@ With the power of **Google Gemini AI**, users can generate blog descriptions ins
 ## ✨ Features
 - 🔑 **JWT Authentication** (secure login/signup)
 - 📝 **AI-Powered Blog Writing** (Gemini AI integration)
-- 📌 AI-powered thumbnail generation (via Pollinations AI) or manual image upload support
+- 📌 **AI-Powered Thumbnail Generation** (via Pollinations AI) or manual image upload support
 - 🎨 **Responsive UI** (TailwindCSS + Motion for smooth animations)
 - 🗄️ **MongoDB Database** (via Mongoose)
 - 📷 **Image Uploads** (Multer + ImageKit)
@@ -18,6 +18,10 @@ With the power of **Google Gemini AI**, users can generate blog descriptions ins
 - 🖋️ **Rich Text Editor** using Quill
 - 🔥 **Toast Notifications** with React Hot Toast
 - 📚 **Markdown Support** with Marked
+- 🔄 **Real-Time Blog Updates** using WebSockets
+- 👏 **Clap Feature** with WebSockets (like button with animations)
+- 🤝 **Follow & Unfollow System** (real-time updates on followers list)
+
 
 ---
 
@@ -25,6 +29,7 @@ With the power of **Google Gemini AI**, users can generate blog descriptions ins
 **Frontend**
 - React 19
 - React Router DOM 7
+- Socket io
 - TailwindCSS 4
 - Motion (animations)
 - Quill (text editor)
