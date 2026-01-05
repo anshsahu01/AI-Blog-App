@@ -1,12 +1,15 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://ai-blog-app-seven-orpin.vercel.app/api/$1"
-    },
+      "source": "/api/:path*",
+      "destination": "https://ai-blog-app-seven-orpin.vercel.app/api/:path*"
+    }
+  ],
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/"
+      "src": "/[^.]+",
+      "dest": "/",
+      "status": 200
     }
   ]
 }

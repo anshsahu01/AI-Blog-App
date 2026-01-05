@@ -31,13 +31,14 @@ const App = () => {
       <Routes>
         <Route path="/" element = {<Home/>}/>
         <Route path="/blog/:id" element = {<Blog/>}/>
-       
-       // making the parent route admin and child routes in import PropTypes from 'prop-types'
+
+       {/* making the parent route admin and child routes */}
        <Route path="/signup" element={<SignUpPage/>}/>
        <Route path="/login" element={<Login/>}/>
-       
+
        <Route path='/admin' element={token?<Layout/>:<Login/>}>
-         <Route index element={<Dashboard/>}/> // index means ye default route hai admin per jaane per ye hi dikhega
+         {/* index means ye default route hai admin per jaane per ye hi dikhega */}
+         <Route index element={<Dashboard/>}/>
          <Route path='addBlog' element={<AddBlog/>}/>
          <Route path='comments' element={<Comments/>}/>
          <Route path='listblog' element={<ListBlog/>}/>
