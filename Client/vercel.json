@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://ai-blog-app-seven-orpin.vercel.app/"
+      "destination": "https://ai-blog-app-seven-orpin.vercel.app/api/$1"
     },
     {
       "source": "/(.*)",
