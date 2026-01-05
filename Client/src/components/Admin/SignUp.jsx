@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../../context/appContext';
 import toast from 'react-hot-toast';
-import ReCAPTCHA from "react-google-recaptcha";
 
 const SignUp = () => {
   const { axios, setToken, navigate } = useAppContext();
@@ -13,12 +12,6 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [confirmPassword, setconfirmPassword] = useState('');
-  const [recaptchaToken, setReCaptchaToken] = useState(null);
-
-  // if(!recaptchaToken){
-  //   toast.error("Please verify that you are not a robot");
-  //   return;
-  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // stop page reload
@@ -28,9 +21,7 @@ const SignUp = () => {
         return;
       }
       setLoading(true);
-      const { data } = await axios.post('/api/user/register', { name,email, password,
-        captchatoken : recaptchaToken
-       });
+      const { data } = await axios.post('/api/user/register', { name, email, password });
 
       if (!data) {
         toast.error("No response from server");
@@ -55,10 +46,6 @@ const SignUp = () => {
       setLoading(false);
     }
   };
-
-  const handleCaptcha = (captchatoken)=> { // ye jwt wala token nhi hai it is given by google captcha
-    setReCaptchaToken(captchatoken);
-  }
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -123,12 +110,6 @@ const SignUp = () => {
                 className="border-b-2 border-gray-300 p-2 outline-none mb-6"
               />
             </div>
-
-            <ReCAPTCHA
-
-            sitekey={import.meta.env.VITE_CAPTCHA_COPY_KEY }
-            onChange={handleCaptcha}
-            ></ReCAPTCHA>
 
             <button
               type="submit"
