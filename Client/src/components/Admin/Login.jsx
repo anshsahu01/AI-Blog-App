@@ -27,24 +27,20 @@ const Login = () => {
       }
 
       const data = resp.data;
-      console.log("---LOGIN DATA---", data);
 
       if (data.success) {
 
         setToken(data.accessToken);
-        
+
 
         setuserId(data.user._id);
-        
-        console.log("User ID set:", data.user._id);
-        
+
         toast.success("Login successful!");
         navigate('/admin');
       } else {
         toast.error(data.message || "Login failed");
       }
     } catch (error) {
-      console.log("Login error:", error);
       toast.error(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);

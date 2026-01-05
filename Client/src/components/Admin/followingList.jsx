@@ -7,9 +7,6 @@ function FollowingList() {
   const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  if (token) {
-    console.log("Token", token);
-  }
 
   const fetchFollowing = async () => {
     if (!token) {
@@ -32,16 +29,12 @@ function FollowingList() {
       const data = res.data;
 
       if (data && data.success) {
-        console.log("Data", data);
-        console.log("Following", data.following);
         setFollowing(data.following); // Fixed: was setFollowers
       } else {
         toast.error(data.message || "Unable to fetch Following");
-        console.log("Data not found");
         return;
       }
     } catch (error) {
-      console.error("Fetch following error:", error);
       if (error.response?.status === 401) {
         toast.error("Authentication failed. Please login again.");
       } else {
@@ -70,7 +63,6 @@ function FollowingList() {
         toast.success("Unfollowed User");
       }
     } catch (error) {
-      console.log("Unfollow Error", error.message);
       toast.error("Failed to unfollow user");
     }
   };

@@ -23,8 +23,6 @@ const AddBlog = () => {
       e.preventDefault();
       setIsAdding(true);
 
-      console.log("---USERID--",userId);
-
       const blog = {
         title,
         subTitle,
@@ -38,25 +36,13 @@ const AddBlog = () => {
       formData.append("blog", JSON.stringify(blog));
       formData.append("thumbnail", image);
 
-      if (token) {
-        console.log(token);
-      }
-
-
       const res = await axios.post("/api/blog/add-blog", formData, {
         headers: {
           Authorization: token, // sirf token, "Bearer " nahi
         },
       });
 
-      if (res) {
-        console.log("RESPONSE", res);
-      } else {
-        console.log("-------- response nhi aaya ------");
-      }
-
       const data = res.data;
-      console.log("------DATA----", data);
       if (data.success) {
         toast.success(data.message);
         setImage(false);
@@ -69,7 +55,6 @@ const AddBlog = () => {
       }
     } catch (error) {
       toast.error(error.message);
-      console.log(error, "ye error aaya hai");
     } finally {
       setIsAdding(false);
     }
@@ -90,16 +75,9 @@ const AddBlog = () => {
           Authorization : token,
         }
       });
-      if(res){
-        console.log("-----res----",res);
-      }else{
-        console.log("RES NHI MILA");
-      }
       const data = res.data;
-      console.log(data);
-      
+
       if (data.success) {
-        console.log(data);
         quillRef.current.root.innerHTML = marked.parse(data.content);
       } else {
         toast.error(data.message);
@@ -127,23 +105,14 @@ const AddBlog = () => {
       });
 
       if(data.success){
-        
-        console.log("-----IMAGE GENERATE HOGYI-----",data);
-      
         setaiImages(data.images);
         setimgGenerated(true);
-        
-
       }else{
-        console.log("------DATA NHI MILA-----");
         return toast.error("error in generating res");
       }
       
     } catch (error) {
-
-      console.log("ERROR IN GENERATE IMAGE",error);
       toast.error(error.message);
-      
     }finally{
       setImageLoading(false);
     }

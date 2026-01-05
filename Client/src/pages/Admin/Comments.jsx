@@ -22,19 +22,10 @@ const Comments = () => {
         }
         })
 
-        if(data){
-          console.log("-----DATA----",data);
-
-        }else{
-          console.log("DATA NHI AAYA");
-        }
-
         if(data.status){
           setComments(data.comments);
           toast.success(data.message);
-
         }else{
-          console.log("nhi chala");
           toast.error(data.message);
         }
       

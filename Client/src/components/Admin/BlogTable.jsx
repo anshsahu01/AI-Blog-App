@@ -19,13 +19,7 @@ function BlogTable({blog, fetchBlogs,index}) {
           Authorization : token
         }
       });
-      if(res){
-        console.log("-----res----",res);
-      }
       const data = res.data;
-      if(data){
-        console.log("-----data----",data);
-      }
 
       if(data.success){
         toast.success(data.message);

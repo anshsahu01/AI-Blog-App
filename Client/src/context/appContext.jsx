@@ -78,24 +78,18 @@ export const AppProvider = ({ children }) => {
     // Restore token and userId from localStorage
     const storedToken = localStorage.getItem("token");
     const storedUserId = localStorage.getItem("userId");
-    
-    console.log("Stored token:", storedToken);
-    console.log("Stored userId:", storedUserId);
-    
+
     if (storedToken) {
       setToken(storedToken);
       axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
     }
-    
+
     if (storedUserId) {
       setuserId(storedUserId);
-      console.log("UserId restored from localStorage:", storedUserId);
     }
-    
-    // Only fetch blogs after setting up auth
-    if (storedToken) {
-      fetchBlogs();
-    }
+
+    // Fetch blogs on initial load (blogs are public, no auth needed)
+    fetchBlogs();
   }, []);
 
   const value = {

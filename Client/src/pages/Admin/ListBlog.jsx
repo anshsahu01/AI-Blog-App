@@ -7,7 +7,6 @@ const ListBlog = () => {
       const [blog,setBlogData] =  useState([]);
 
       const {axios, token} = useAppContext();
-      console.log(token);
 
 
     const fetchBlogs = async ()=>{

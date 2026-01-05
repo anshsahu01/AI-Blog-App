@@ -7,8 +7,6 @@ const Layout = () => {
     const navigate = useNavigate();
     const {axios, token, setToken} = useAppContext();
 
-console.log("----TOKEN---",token);
-
 
     const logout = async ()=>{
       try {
@@ -17,9 +15,6 @@ console.log("----TOKEN---",token);
             Authorization : token,
           }
         });
-        if(res){
-          console.log(res);
-        }
         const data = res.data;
         if(data.success){
           toast.success(data.message);

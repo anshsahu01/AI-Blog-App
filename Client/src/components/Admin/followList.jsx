@@ -6,9 +6,6 @@ function FollowList() {
   const { userId, axios, token } = useAppContext();
   const [followers, setFollowers] = useState([]);
   const [loading, setLoading] = useState(true);
-  if (token) {
-    console.log("TOken", token);
-  }
 
   const fetchFollowers = async () => {
     if (!token) {
@@ -30,12 +27,9 @@ function FollowList() {
       const data = res.data;
 
       if (data && data.success) {
-        console.log("Data", data);
-        console.log("Fo", data.followers);
         setFollowers(data.followers);
       } else {
         toast.error("Unable to fetch Followers");
-        console.log("Data no found");
         return;
       }
     } catch (error) {
@@ -60,10 +54,7 @@ function FollowList() {
       }
       
     } catch (error) {
-
-      console.log("Follow error", error.message);
       return;
-      
     }
   }
 
@@ -83,10 +74,7 @@ function FollowList() {
       toast.success("Unfollowed User");
       
     } catch (error) {
-
-      console.log("Unfollow Error", error.message);
       return;
-      
     }
 
   }

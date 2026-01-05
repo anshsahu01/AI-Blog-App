@@ -46,9 +46,6 @@ function Blog() {
   const fetchComments = async () => {
     try {
       const { data } = await axios.post("/api/blog/comments", { blog: id });
-      if (data) {
-        console.log(data);
-      }
 
       data.success ? setComments(data.comments) : toast.error(data.message);
     } catch (error) {
@@ -82,15 +79,10 @@ function Blog() {
   // Handle follow button
   const handleFollow = async () => {
     try {
-      console.log("button clicked");
-
       const targetUserId = data?.user?._id;
       if (!targetUserId) {
-        console.log("--Target user not found");
         return;
       }
-      console.log("--AUTHOR ID--", targetUserId);
-      console.log("--USER ID--", userId);
 
       if (isFollowing) {
         const res = await axios.post(`/api/user/unfollow/${targetUserId}`, {
@@ -98,15 +90,13 @@ function Blog() {
         });
 
         if (!res) {
-          console.log("No response received");
           return;
         }
 
         if (res.data.success) {
-          toast.success(`Unfollowed ${data.user.name}`);
+          toast.success(`Unfollowed ${data?.user?.name || 'user'}`);
           setIsfollowing(false);
         } else {
-          console.log("--ERROR IN UNFOLLOW--", res.data.message);
           toast.error(res.data.message);
         }
       } else {
@@ -115,20 +105,17 @@ function Blog() {
         });
 
         if (!res) {
-          console.log("No response received");
           return;
         }
 
         if (res.data.success) {
-          toast.success(`Following ${data.user.name}`);
+          toast.success(`Following ${data?.user?.name || 'user'}`);
           setIsfollowing(true);
         } else {
-          console.log(res.data.message);
           toast.error(res.data.message);
         }
       }
     } catch (error) {
-      console.log("---FOLLOW ERROR-- ", error);
       toast.error("Something went wrong");
     }
   };
@@ -184,13 +171,15 @@ function Blog() {
       {/* Blog Title & Details */}
       <div className="text-center mt-20 text-gray-600">
         <div className="flex items-center justify-center gap-4 mb-2">
-          <span className="font-medium text-gray-700">{data.user.name}</span>
-          <button
-            onClick={handleFollow}
-            className="py-1 px-4 border rounded-full text-sm text-blue-700 font-medium hover:bg-blue-50"
-          >
-            {isFollowing ? "Following" : "Follow"}
-          </button>
+          <span className="font-medium text-gray-700">{data?.user?.name || 'Anonymous'}</span>
+          {data?.user?._id && userId && data.user._id !== userId && (
+            <button
+              onClick={handleFollow}
+              className="py-1 px-4 border rounded-full text-sm text-blue-700 font-medium hover:bg-blue-50"
+            >
+              {isFollowing ? "Following" : "Follow"}
+            </button>
+          )}
         </div>
 
         <p className="py-4 font-medium">
@@ -219,6 +208,9 @@ function Blog() {
           src={data.thumbnail}
           alt={data.title}
           className="rounded-3xl mb-5 w-full"
+          onError={(e) => {
+            e.target.src = 'https://via.placeholder.com/1200x600?text=Image+Not+Available';
+          }}
         />
       </div>
 
